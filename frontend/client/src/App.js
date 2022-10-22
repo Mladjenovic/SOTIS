@@ -1,8 +1,13 @@
+import "./App.css";
+import "antd/dist/antd.min.css"; // or 'antd/dist/antd.less'
+import CustomLayout from "./containers/Layout";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+
 function App() {
   return (
-    <div>
-      <h1>Hello world</h1>
-    </div>
+    <Router>
+      <CustomLayout></CustomLayout>
+    </Router>
   );
 }
 
