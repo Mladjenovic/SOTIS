@@ -74,6 +74,7 @@ function Login() {
             name="username"
             onChange={(e) => handleChange(e)}
             min="3"
+            autoComplete="on"
           />
 
           <input
@@ -81,6 +82,7 @@ function Login() {
             placeholder="Password"
             name="password"
             onChange={(e) => handleChange(e)}
+            autoComplete="on"
           />
 
           <button type="submit">Login</button>

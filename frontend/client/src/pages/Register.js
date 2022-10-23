@@ -94,24 +94,28 @@ function Register() {
             placeholder="Username"
             name="username"
             onChange={(e) => handleChange(e)}
+            autoComplete="on"
           />
           <input
             type="email"
             placeholder="Email"
             name="email"
             onChange={(e) => handleChange(e)}
+            autoComplete="on"
           />
           <input
             type="password"
             placeholder="Password"
             name="password"
             onChange={(e) => handleChange(e)}
+            autoComplete="on"
           />
           <input
             type="password"
             placeholder="Configm password"
             name="confirmPassword"
             onChange={(e) => handleChange(e)}
+            autoComplete="on"
           />
 
           <fieldset>
@@ -122,6 +126,7 @@ function Register() {
                 name="userType"
                 value="Professor"
                 onChange={(e) => handleChange(e)}
+                autoComplete="on"
               />
               <label htmlFor="professor">Professor</label>
               <input
@@ -130,6 +135,7 @@ function Register() {
                 name="userType"
                 value="Admin"
                 onChange={(e) => handleChange(e)}
+                autoComplete="on"
               />
               <label htmlFor="admin">Administrator</label>
               <input
@@ -138,6 +144,7 @@ function Register() {
                 name="userType"
                 value="Student"
                 onChange={(e) => handleChange(e)}
+                autoComplete="on"
               />
               <label htmlFor="student">Student</label>
             </div>
