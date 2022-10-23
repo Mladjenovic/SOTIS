@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 
 import { Layout, Menu, Breadcrumb } from "antd";
 import {
   HomeOutlined,
   LoginOutlined,
   PlusCircleTwoTone,
+  LogoutOutlined,
 } from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -15,12 +22,26 @@ import Register from "../pages/Register";
 import Home from "../pages/Home";
 
 function CustomLayout() {
-  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {}, []);
+  const [collapsed, setCollapsed] = useState(false);
+  const [currentUser, setCurrentUser] = useState(undefined);
+
+  useEffect(() => {
+    if (!localStorage.getItem("chat-app-user")) {
+      navigate("/");
+    } else {
+      setCurrentUser(JSON.parse(localStorage.getItem("chat-app-user")));
+    }
+  }, []);
 
   const onCollapse = (collapsed) => {
     setCollapsed(collapsed);
+  };
+
+  const handleLogout = async () => {
+    localStorage.clear();
+    navigate("/login");
   };
 
   return (
@@ -37,6 +58,11 @@ function CustomLayout() {
           <Menu.Item key="3" icon={<LoginOutlined />}>
             <Link to="/login">Login</Link>
           </Menu.Item>
+          {currentUser && (
+            <Menu.Item key="4" icon={<LogoutOutlined />}>
+              <div onClick={handleLogout}>Logout</div>
+            </Menu.Item>
+          )}
         </Menu>
       </Sider>
       <Layout className="site-layout">

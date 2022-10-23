@@ -5,6 +5,7 @@ import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { registerRoute } from "../utils/APIRoutes";
+import { toastOptions } from "../utils/constants";
 import "react-toastify/dist/ReactToastify.css";
 
 function Register() {
@@ -15,16 +16,19 @@ function Register() {
     email: "",
     password: "",
     confirmPassword: "",
+    userType: undefined,
   });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (handleValidation()) {
-      const { password, confirmPassword, username, email } = values;
+      const { password, confirmPassword, username, email, userType } = values;
+      console.table(password, confirmPassword, username, email, userType);
       const { data } = await axios.post(registerRoute, {
         username,
         email,
         password,
+        userType,
       });
       if (data.status === false) {
         toast.error(data.msg, toastOptions);
@@ -36,14 +40,6 @@ function Register() {
     }
   };
 
-  const toastOptions = {
-    position: "bottom-right",
-    autoClose: 8000,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "dark",
-  };
-
   //   useEffect(() => {
   //     if (localStorage.getItem("chat-app-user")) {
   //       navigate("/");
@@ -51,7 +47,7 @@ function Register() {
   //   }, []);
 
   const handleValidation = () => {
-    const { password, confirmPassword, username, email } = values;
+    const { password, confirmPassword, username, email, userType } = values;
     if (password !== confirmPassword) {
       toast.error(
         "password and confirm passowrd should be same.",
@@ -69,6 +65,9 @@ function Register() {
       return false;
     } else if (email === "") {
       toast.error("Email is required", toastOptions);
+      return false;
+    } else if (userType === undefined) {
+      toast.error("Select user type e.g. Professor", toastOptions);
       return false;
     }
     return true;
@@ -114,6 +113,36 @@ function Register() {
             name="confirmPassword"
             onChange={(e) => handleChange(e)}
           />
+
+          <fieldset>
+            <div>
+              <input
+                type="radio"
+                id="professor"
+                name="userType"
+                value="Professor"
+                onChange={(e) => handleChange(e)}
+              />
+              <label htmlFor="professor">Professor</label>
+              <input
+                type="radio"
+                id="admin"
+                name="userType"
+                value="Admin"
+                onChange={(e) => handleChange(e)}
+              />
+              <label htmlFor="admin">Administrator</label>
+              <input
+                type="radio"
+                id="student"
+                name="userType"
+                value="Student"
+                onChange={(e) => handleChange(e)}
+              />
+              <label htmlFor="student">Student</label>
+            </div>
+          </fieldset>
+
           <button type="submit">Create User</button>
           <span>
             Already have an account ? <Link to="/login">Login</Link>
@@ -151,7 +180,7 @@ const FormContainer = styled.div`
   form {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
     background-color: #00000076;
     border-radius: 2rem;
     padding: 3rem 5rem;
@@ -190,6 +219,16 @@ const FormContainer = styled.div`
       color: #4e0eff;
       text-decoration: none;
       font-weight: bold;
+    }
+  }
+  fieldset {
+    div {
+      display: flex;
+      color: white;
+      flex-direction: row;
+      label {
+        padding: 0.5rem;
+      }
     }
   }
 `;
