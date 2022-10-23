@@ -1,0 +1,12 @@
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\bin\Debug\net5.0\SOTIS-backend.Common.deps.json
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\bin\Debug\net5.0\SOTIS-backend.Common.dll
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\bin\Debug\net5.0\ref\SOTIS-backend.Common.dll
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\bin\Debug\net5.0\SOTIS-backend.Common.pdb
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\obj\Debug\net5.0\SOTIS-backend.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\obj\Debug\net5.0\SOTIS-backend.Common.AssemblyInfoInputs.cache
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\obj\Debug\net5.0\SOTIS-backend.Common.AssemblyInfo.cs
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\obj\Debug\net5.0\SOTIS-backend.Common.csproj.CoreCompileInputs.cache
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\obj\Debug\net5.0\SOTIS-backend.Common.dll
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\obj\Debug\net5.0\ref\SOTIS-backend.Common.dll
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\obj\Debug\net5.0\SOTIS-backend.Common.pdb
+C:\Users\Marko\source\repos\SOTIS-backend\SOTIS-backend.Common\obj\Debug\net5.0\SOTIS-backend.Common.csproj.AssemblyReference.cache
