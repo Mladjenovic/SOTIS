@@ -7607,11 +7607,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend\\SOTIS-backend.csproj",
+      "projectUniqueName": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend\\SOTIS-backend.csproj",
       "projectName": "SOTIS-backend",
-      "projectPath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend\\SOTIS-backend.csproj",
+      "projectPath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend\\SOTIS-backend.csproj",
       "packagesPath": "C:\\Users\\Marko\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend\\obj\\",
+      "outputPath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Marko\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -7628,11 +7628,11 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj": {
-              "projectPath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj"
+            "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj": {
+              "projectPath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj"
             },
-            "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.DataAccess\\SOTIS-backend.DataAccess.csproj": {
-              "projectPath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.DataAccess\\SOTIS-backend.DataAccess.csproj"
+            "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.DataAccess\\SOTIS-backend.DataAccess.csproj": {
+              "projectPath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.DataAccess\\SOTIS-backend.DataAccess.csproj"
             }
           }
         }

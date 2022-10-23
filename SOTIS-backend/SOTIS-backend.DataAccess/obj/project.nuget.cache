@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "C1/taCqd/8tv/K8SXHLU8X7fdfcxYuGWnDmrJl2OkwGY3LgERyZ9pNip2HZaBVmYVjKh31rxjZU3jb6ug+TL1w==",
+  "dgSpecHash": "zbwBeuy2ZIE8Osebw/2BHInkuPJVdlAAKiegtlf+Tfw/19vKUVnLnjmcrub8jckCI5PRPj0F0s8OX3nJ2JkuDg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.DataAccess\\SOTIS-backend.DataAccess.csproj",
+  "projectFilePath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.DataAccess\\SOTIS-backend.DataAccess.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Marko\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Marko\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

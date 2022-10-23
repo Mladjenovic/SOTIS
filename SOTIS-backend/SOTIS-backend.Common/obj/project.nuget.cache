@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "dZL+rX1NrEobHqTGAS/dfbI0pBSyU+WX/93kk+AVQzAqjPSzXZDcC2bw6aV9FUaI+phu2EC3/P/Xe0NhSumRHQ==",
+  "dgSpecHash": "PPGwXiH7dWTL6BvQMHzBquxqR603XRl79B+H1oBfoVJlHHnV9+YqXsrOnIGh40UlQhe+aZukA1w/bFPbHug4cg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj",
+  "projectFilePath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Marko\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\Marko\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",

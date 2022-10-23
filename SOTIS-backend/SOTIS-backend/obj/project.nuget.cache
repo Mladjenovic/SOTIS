@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "23kiA/ItRamk6svJUAJD6ujSmHx3szjutT6rpCL/UrAqm/yhazC+FoY8z9/EdytS0fago04HKYWNbXuGqC+x7Q==",
+  "dgSpecHash": "ElvtyKUtU43M6JuPq+iWcdH0ocB8JaMAGbrQGia2rIIYDqD4Whv7idhMgxFozE2X7w+9pD8rUyYh9N3u/oMNKw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend\\SOTIS-backend.csproj",
+  "projectFilePath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend\\SOTIS-backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Marko\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\Marko\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.0\\automapper.extensions.microsoft.dependencyinjection.12.0.0.nupkg.sha512",

@@ -677,11 +677,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj",
+      "projectUniqueName": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj",
       "projectName": "SOTIS-backend.Common",
-      "projectPath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj",
+      "projectPath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.Common\\SOTIS-backend.Common.csproj",
       "packagesPath": "C:\\Users\\Marko\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Marko\\source\\repos\\SOTIS-backend\\SOTIS-backend.Common\\obj\\",
+      "outputPath": "C:\\Users\\Marko\\source\\repos\\SOTIS\\SOTIS-backend\\SOTIS-backend.Common\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Marko\\AppData\\Roaming\\NuGet\\NuGet.Config",
