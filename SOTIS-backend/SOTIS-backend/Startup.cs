@@ -43,7 +43,14 @@ namespace SOTIS_backend
                     )
                 );
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                    builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithExposedHeaders("access-token"));
+            });
 
             var appSettings = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettings);
@@ -105,10 +112,7 @@ namespace SOTIS_backend
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SOTIS_backend v1"));
             }
 
-            app.UseCors(builder => builder
-                .WithOrigins("*")
-                .AllowAnyHeader()
-                .AllowAnyMethod());
+            app.UseCors();
 
             app.UseAuthentication();
 

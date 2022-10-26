@@ -28,10 +28,10 @@ function CustomLayout() {
   const [currentUser, setCurrentUser] = useState(undefined);
 
   useEffect(() => {
-    if (!localStorage.getItem("chat-app-user")) {
+    if (!localStorage.getItem("sotis-app-user")) {
       navigate("/");
     } else {
-      setCurrentUser(JSON.parse(localStorage.getItem("chat-app-user")));
+      setCurrentUser(JSON.parse(localStorage.getItem("sotis-app-user")));
     }
   }, []);
 
@@ -40,8 +40,9 @@ function CustomLayout() {
   };
 
   const handleLogout = async () => {
-    localStorage.clear();
-    navigate("/login");
+    localStorage.removeItem("sotis-app-user");
+    navigate(0);
+    navigate("/");
   };
 
   return (
@@ -52,12 +53,17 @@ function CustomLayout() {
           <Menu.Item key="1" icon={<HomeOutlined />}>
             <Link to="/">Home</Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<PlusCircleTwoTone />}>
-            <Link to="/register">Register</Link>
-          </Menu.Item>
-          <Menu.Item key="3" icon={<LoginOutlined />}>
-            <Link to="/login">Login</Link>
-          </Menu.Item>
+          {!currentUser && (
+            <Menu.Item key="2" icon={<PlusCircleTwoTone />}>
+              <Link to="/register">Register</Link>
+            </Menu.Item>
+          )}
+          {!currentUser && (
+            <Menu.Item key="3" icon={<LoginOutlined />}>
+              <Link to="/login">Login</Link>
+            </Menu.Item>
+          )}
+
           {currentUser && (
             <Menu.Item key="4" icon={<LogoutOutlined />}>
               <div onClick={handleLogout}>Logout</div>

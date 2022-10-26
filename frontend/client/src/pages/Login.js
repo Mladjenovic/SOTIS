@@ -6,10 +6,12 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { loginRoute } from "../utils/APIRoutes";
 import { toastOptions } from "../utils/constants";
+import jwt_decode from "jwt-decode";
 import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const navigate = useNavigate();
+  const [data, setData] = useState({});
 
   const [values, setValues] = useState({
     username: "",
@@ -20,25 +22,38 @@ function Login() {
     event.preventDefault();
     if (handleValidation()) {
       const { password, username } = values;
-      const { data } = await axios.post(loginRoute, {
-        username,
-        password,
-      });
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
+      var { headers, status } = await axios
+        .post(loginRoute, {
+          username,
+          password,
+        })
+        .catch((error) => {
+          toast.error(error.message, toastOptions);
+        });
+
+      var decoded_token = jwt_decode(headers["access-token"]);
+      const current_user = decoded_token["session-info"];
+
+      if (status !== 200) {
+        toast.error("Error occured", toastOptions);
       }
-      if (data.status === true) {
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate("/");
+      if (status === 200) {
+        localStorage.setItem("sotis-app-user", current_user);
+        toast.success("Successfull log in", toastOptions);
+        setTimeout(() => {
+          navigate(0);
+          navigate("/");
+        }, 3000);
       }
     }
   };
 
-  //   useEffect(() => {
-  //     if (localStorage.getItem("chat-app-user")) {
-  //       navigate("/");
-  //     }
-  //   }, []);
+  useEffect(() => {
+    if (localStorage.getItem("sotis-app-user")) {
+      navigate("/");
+      navigate(0);
+    }
+  }, []);
 
   const handleValidation = () => {
     const { password, username } = values;

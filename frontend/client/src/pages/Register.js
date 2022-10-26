@@ -13,7 +13,8 @@ function Register() {
 
   const [values, setValues] = useState({
     username: "",
-    email: "",
+    name: "",
+    surname: "",
     password: "",
     confirmPassword: "",
     userType: undefined,
@@ -22,29 +23,35 @@ function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (handleValidation()) {
-      const { password, confirmPassword, username, email, userType } = values;
-      console.table(password, confirmPassword, username, email, userType);
-      const { data } = await axios.post(registerRoute, {
-        username,
-        email,
-        password,
-        userType,
-      });
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate("/");
+      const { password, confirmPassword, username, name, surname, userType } =
+        values;
+
+      const { status } = await axios
+        .post(registerRoute, {
+          username,
+          name,
+          surname,
+          password,
+          userType,
+        })
+        .catch((error) => {
+          toast.error(error.message, toastOptions);
+        });
+
+      if (status === 201) {
+        toast.success("Successfull registration!", toastOptions);
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       }
     }
   };
 
-  //   useEffect(() => {
-  //     if (localStorage.getItem("chat-app-user")) {
-  //       navigate("/");
-  //     }
-  //   }, []);
+  useEffect(() => {
+    if (localStorage.getItem("chat-app-user")) {
+      navigate("/");
+    }
+  }, []);
 
   const handleValidation = () => {
     const { password, confirmPassword, username, email, userType } = values;
@@ -97,9 +104,16 @@ function Register() {
             autoComplete="on"
           />
           <input
-            type="email"
-            placeholder="Email"
-            name="email"
+            type="name"
+            placeholder="Name"
+            name="name"
+            onChange={(e) => handleChange(e)}
+            autoComplete="on"
+          />
+          <input
+            type="surname"
+            placeholder="Surname"
+            name="surname"
             onChange={(e) => handleChange(e)}
             autoComplete="on"
           />
