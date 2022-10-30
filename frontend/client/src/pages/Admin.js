@@ -2,6 +2,15 @@ import { Layout, Row, Button, Space, Table, Tag } from "antd";
 import React from "react";
 const { Sider, Content } = Layout;
 
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+  Outlet,
+} from "react-router-dom";
+
 import { PlusOutlined, OrderedListOutlined } from "@ant-design/icons";
 
 const columns = [
@@ -76,7 +85,7 @@ const data = [
   },
 ];
 
-function AdminSubjects() {
+function Admin() {
   return (
     <Layout>
       <Sider
@@ -90,22 +99,31 @@ function AdminSubjects() {
         <Row>
           <Button type="primary" ghost style={{ border: "none" }}>
             <OrderedListOutlined />
-            &nbsp;All subjects
+            <Link to="/admin">&nbsp;All subjects</Link>
           </Button>
         </Row>
         <Row>
           <Button type="primary" ghost style={{ border: "none" }}>
-            <PlusOutlined /> New Subject
+            <Link to="/admin/addSubject">
+              <PlusOutlined /> New Subject
+            </Link>
           </Button>
         </Row>
       </Sider>
-      <Layout style={{ border: "1px solid", marginRight: "20%" }}>
+      <Layout
+        style={{
+          backgroundColor: "white",
+          border: "1px solid",
+          borderColor: "white",
+          marginRight: "20%",
+        }}
+      >
         <Content>
-          <Table columns={columns} dataSource={data} />
+          <Outlet />
         </Content>
       </Layout>
     </Layout>
   );
 }
 
-export default AdminSubjects;
+export default Admin;

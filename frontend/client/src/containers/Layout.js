@@ -21,7 +21,9 @@ const { Header, Content, Footer, Sider } = Layout;
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
-import AdminSubjects from "../pages/AdminSubjects";
+import Admin from "../pages/Admin";
+import AllSubjectsAdmin from "../pages/AllSubjectsAdmin";
+import AddNewSbuject from "../components/AddNewSbuject";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -73,7 +75,7 @@ function CustomLayout() {
           )}
           {currentUser && currentUser.Role === 0 && (
             <Menu.Item key="5" icon={<BookOutlined />}>
-              <Link to="/admin/subjects">Subjects</Link>
+              <Link to="/admin">Subjects</Link>
             </Menu.Item>
           )}
         </Menu>
@@ -98,7 +100,11 @@ function CustomLayout() {
               <Route exact path="/" element={<Home />}></Route>
               <Route exact path="/register" element={<Register />} />
               <Route exact path="/login" element={<Login />} />
-              <Route exact path="/admin/subjects" element={<AdminSubjects />} />
+              <Route exact path="/admin" element={<Admin />}>
+                <Route path="/admin" element={<AllSubjectsAdmin />} />
+                <Route path="/admin/addSubject" element={<AddNewSbuject />} />
+                <Route path="*" element={<AllSubjectsAdmin />} />
+              </Route>
             </Routes>
           </div>
         </Content>
