@@ -92,7 +92,7 @@ namespace SOTIS_backend
                 options.EnableEndpointRouting = false;
                 options.Filters.Add(new AuthorizeFilter());
                 options.Filters.Add(new ApiExceptionFilter());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddNewtonsoftJson();
 
             services.AddAuthentication(options =>
             {

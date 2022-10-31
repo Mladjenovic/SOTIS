@@ -23,4 +23,8 @@
     <ProjectReference Include="..\SOTIS-backend.Common\SOTIS-backend.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

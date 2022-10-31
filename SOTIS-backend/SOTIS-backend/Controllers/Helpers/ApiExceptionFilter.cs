@@ -28,6 +28,7 @@ namespace SOTIS_backend.Controllers.Helpers
             context.HttpContext.Response.StatusCode = statusCode;
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(context.Exception.Message)).ConfigureAwait(false).GetAwaiter().GetResult();
+            context.ExceptionHandled = true;
         }
     }
 }

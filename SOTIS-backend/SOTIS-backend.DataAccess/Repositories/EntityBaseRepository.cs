@@ -64,10 +64,20 @@ namespace SOTIS_backend.DataAccess.Repositories
             return _context.Set<T>().Where(predicate);
         }
 
-        public virtual void Add(T entity)
+        public virtual IEnumerable<T> FindByIncluding(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+            return query.Where(predicate);
+        }
+
+        public virtual T Add(T entity)
         {
             EntityEntry dbEntityEntry = _context.Entry<T>(entity);
-            _context.Set<T>().Add(entity);
+            return _context.Set<T>().Add(entity).Entity;
         }
 
         public virtual void Update(T entity)

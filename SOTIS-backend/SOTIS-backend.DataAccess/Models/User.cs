@@ -1,5 +1,6 @@
 ﻿using SOTIS_backend.Common.Enums;
 using SOTIS_backend.DataAccess.Interfaces;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,12 +18,12 @@ namespace SOTIS_backend.DataAccess.Models
 
         public string Password { get; set; }
 
-        public string Salt { get; set; }
-
         public string Name { get; set; }
 
         public string Surname { get; set; }
 
         public Role Role { get; set; }
+
+        public IEnumerable<SubjectParticipant> SubjectParticipants { get; set; }
     }
 }

@@ -35,6 +35,11 @@ namespace SOTIS_backend.Controllers
                 return BadRequest("User does not exist!");
             }
 
+            if (!user.Password.Equals(loginDto.Password))
+            {
+                return BadRequest("Password is not valid!");
+            }
+
             var sessionInfo = Mapper.Map<SessionInfo>(user);
             var idToken = JwtUtility.CreateJwtToken(AppSettings, sessionInfo);
             Request.HttpContext.Response.Headers.Add(Constants.AccessToken, idToken);
