@@ -11,7 +11,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const navigate = useNavigate();
-  const [data, setData] = useState({});
 
   const [values, setValues] = useState({
     username: "",
@@ -38,6 +37,7 @@ function Login() {
         toast.error("Error occured", toastOptions);
       }
       if (status === 200) {
+        localStorage.setItem("access-token", headers["access-token"]);
         localStorage.setItem("sotis-app-user", current_user);
         toast.success("Successfull log in", toastOptions);
         setTimeout(() => {
