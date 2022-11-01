@@ -13,6 +13,7 @@ import {
   LoginOutlined,
   PlusCircleTwoTone,
   LogoutOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -20,6 +21,9 @@ const { Header, Content, Footer, Sider } = Layout;
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
+import Admin from "../pages/Admin";
+import AllSubjectsAdmin from "../pages/AllSubjectsAdmin";
+import AddNewSbuject from "../components/AddNewSbuject";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -69,15 +73,25 @@ function CustomLayout() {
               <div onClick={handleLogout}>Logout</div>
             </Menu.Item>
           )}
+          {currentUser && currentUser.Role === 0 && (
+            <Menu.Item key="5" icon={<BookOutlined />}>
+              <Link to="/admin">Subjects</Link>
+            </Menu.Item>
+          )}
         </Menu>
       </Sider>
       <Layout className="site-layout">
         <Header className="site-layout-background" style={{ padding: 0 }} />
         <Content style={{ margin: "0 16px" }}>
-          <Breadcrumb style={{ margin: "16px 0" }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Current User</Breadcrumb.Item>
-          </Breadcrumb>
+          {currentUser && (
+            <Breadcrumb style={{ margin: "16px 0" }}>
+              <Breadcrumb.Item>User</Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {currentUser.Name} Role {currentUser.Role}
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          )}
+
           <div
             className="site-layout-background"
             style={{ padding: 24, minHeight: 360 }}
@@ -86,6 +100,11 @@ function CustomLayout() {
               <Route exact path="/" element={<Home />}></Route>
               <Route exact path="/register" element={<Register />} />
               <Route exact path="/login" element={<Login />} />
+              <Route exact path="/admin" element={<Admin />}>
+                <Route path="/admin" element={<AllSubjectsAdmin />} />
+                <Route path="/admin/addSubject" element={<AddNewSbuject />} />
+                <Route path="*" element={<AllSubjectsAdmin />} />
+              </Route>
             </Routes>
           </div>
         </Content>
