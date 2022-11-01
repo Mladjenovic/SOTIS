@@ -71,7 +71,12 @@ namespace SOTIS_backend.DataAccess.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("TestId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TestId");
 
                     b.ToTable("Sections");
                 });
@@ -178,8 +183,9 @@ namespace SOTIS_backend.DataAccess.Migrations
             modelBuilder.Entity("SOTIS_backend.DataAccess.Models.ProfessorAnswer", b =>
                 {
                     b.HasOne("SOTIS_backend.DataAccess.Models.Question", "Question")
-                        .WithMany("PossibleAnswers")
-                        .HasForeignKey("QuestionId");
+                        .WithMany("ProfessorAnswers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Question");
                 });
@@ -188,9 +194,20 @@ namespace SOTIS_backend.DataAccess.Migrations
                 {
                     b.HasOne("SOTIS_backend.DataAccess.Models.Section", "Section")
                         .WithMany("Questions")
-                        .HasForeignKey("SectionId");
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("SOTIS_backend.DataAccess.Models.Section", b =>
+                {
+                    b.HasOne("SOTIS_backend.DataAccess.Models.Test", "Test")
+                        .WithMany("Sections")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("SOTIS_backend.DataAccess.Models.Subject", b =>
@@ -221,14 +238,15 @@ namespace SOTIS_backend.DataAccess.Migrations
                 {
                     b.HasOne("SOTIS_backend.DataAccess.Models.Subject", "Subject")
                         .WithMany("Tests")
-                        .HasForeignKey("SubjectId");
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("SOTIS_backend.DataAccess.Models.Question", b =>
                 {
-                    b.Navigation("PossibleAnswers");
+                    b.Navigation("ProfessorAnswers");
                 });
 
             modelBuilder.Entity("SOTIS_backend.DataAccess.Models.Section", b =>
@@ -241,6 +259,11 @@ namespace SOTIS_backend.DataAccess.Migrations
                     b.Navigation("Students");
 
                     b.Navigation("Tests");
+                });
+
+            modelBuilder.Entity("SOTIS_backend.DataAccess.Models.Test", b =>
+                {
+                    b.Navigation("Sections");
                 });
 
             modelBuilder.Entity("SOTIS_backend.DataAccess.Models.User", b =>

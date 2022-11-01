@@ -14,7 +14,7 @@ namespace SOTIS_backend.DataAccess.Models
 
         public string Text { get; set; }
 
-        public IEnumerable<ProfessorAnswer> PossibleAnswers { get; set; }
+        public IEnumerable<ProfessorAnswer> ProfessorAnswers { get; set; }
 
         public double PointsPerQuestion { get; set; }
 

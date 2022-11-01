@@ -4,5 +4,6 @@ namespace SOTIS_backend.DataAccess.Interfaces
 {
     public interface ITestRepository : IEntityBaseRepository<Test>
     {
+        Test GetSingleThenInclude(string testId);
     }
 }

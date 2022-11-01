@@ -15,5 +15,9 @@ namespace SOTIS_backend.DataAccess.Models
         public string Name { get; set; }
 
         public IEnumerable<Question> Questions { get; set; }
+
+        public Test Test { get; set; }
+
+        public string TestId { get; set; }
     }
 }

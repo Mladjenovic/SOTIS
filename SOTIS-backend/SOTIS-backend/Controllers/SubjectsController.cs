@@ -141,10 +141,15 @@ namespace SOTIS_backend.Controllers
         [AuthorizationFilter(Role.Admin)]
         public IActionResult Delete([FromRoute] string subjectId)
         {
-            var subject = _subjectRepository.GetSingle(subjectId);
+            var subject = _subjectRepository.GetSingle(x => x.Id == subjectId, x => x.Tests);
             if (subject == null)
             {
                 return BadRequest("Subject with given id does not exists");
+            }
+
+            if (subject.Tests.Any())
+            {
+                return BadRequest("Connot delete subject if it contains tests");
             }
 
             var subjectParticipants = _subjectParticipantRepository.FindBy(x => x.SubjectId == subjectId);

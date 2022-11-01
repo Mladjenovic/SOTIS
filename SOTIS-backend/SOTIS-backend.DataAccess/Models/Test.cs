@@ -1,4 +1,5 @@
 ﻿using SOTIS_backend.DataAccess.Interfaces;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,5 +21,7 @@ namespace SOTIS_backend.DataAccess.Models
         public Subject Subject { get; set; }
 
         public string SubjectId { get; set; }
+
+        public IEnumerable<Section> Sections { get; set; }
     }
 }
