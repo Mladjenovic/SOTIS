@@ -29,7 +29,7 @@ namespace SOTIS_backend.Controllers
             _subjectRepository = subjectRepository;
         }
 
-        [HttpGet("get-all-professor/{subjectId}")]
+        [HttpGet("professor/{subjectId}")]
         [AuthorizationFilter(Role.Professor)]
         public IActionResult GetAllProfessor([FromRoute] string subjectId)
         {
@@ -43,7 +43,7 @@ namespace SOTIS_backend.Controllers
             return Ok(result);
         }
 
-        [HttpGet("get-single/{testId}")]
+        [HttpGet("{testId}")]
         [AuthorizationFilter(Role.Professor)]
         public IActionResult GetAll([FromRoute] string testId)
         {
@@ -57,7 +57,7 @@ namespace SOTIS_backend.Controllers
             return Ok(result);
         }
 
-        [HttpPost("create")]
+        [HttpPost]
         [AuthorizationFilter(Role.Professor)]
         public IActionResult CreateTest([FromBody] TestCreateDto testCreateDto)
         {
@@ -76,9 +76,9 @@ namespace SOTIS_backend.Controllers
             return Ok(result);
         }
 
-        [HttpPost("update")]
+        [HttpPut]
         [AuthorizationFilter(Role.Professor)]
-        public IActionResult CreateTest([FromBody] TestDto testDto)
+        public IActionResult UpdateTest([FromBody] TestDto testDto)
         {
             // TODO: prevent test update if some student already took the test
             var testDb = _testRepository.GetSingle(testDto.Id);
@@ -102,7 +102,7 @@ namespace SOTIS_backend.Controllers
             return Ok();
         }
 
-        [HttpDelete("delete/{testId}")]
+        [HttpDelete("{testId}")]
         [AuthorizationFilter(Role.Professor)]
         public IActionResult DeleteTest([FromRoute] string testId)
         {

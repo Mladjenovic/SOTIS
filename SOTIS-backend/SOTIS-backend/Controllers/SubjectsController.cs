@@ -33,7 +33,7 @@ namespace SOTIS_backend.Controllers
             _usersRepository = usersRepository;
         }
 
-        [HttpGet("get-all")]
+        [HttpGet]
         [AuthorizationFilter(Role.Admin)]
         public IActionResult GetAll()
         {
@@ -42,7 +42,7 @@ namespace SOTIS_backend.Controllers
             return Ok(result);
         }
 
-        [HttpGet("get-details/{subjectId}")]
+        [HttpGet("{subjectId}")]
         [AuthorizationFilter(Role.Admin)]
         public IActionResult GetDetails([FromRoute] string subjectId)
         {
@@ -65,59 +65,7 @@ namespace SOTIS_backend.Controllers
             return Ok(result);
         }
 
-        [HttpGet("get-for-professor")]
-        [AuthorizationFilter(Role.Professor)]
-        public IActionResult GetForProfessor()
-        {
-            var sessionInfo = GetSession();
-            var subjects = _subjectRepository.FindByIncluding(x => x.Professor.Id == sessionInfo.Id, x => x.Professor);
-            var result = Mapper.Map<IEnumerable<SubjectDto>>(subjects);
-            return Ok(result);
-        }
-
-        [HttpGet("get-for-student")]
-        [AuthorizationFilter(Role.Student)]
-        public IActionResult GetForStudent()
-        {
-            var sessionInfo = GetSession();
-            var subjectParticipants = _subjectParticipantRepository.FindByIncluding(x => x.UserId == sessionInfo.Id, x => x.Subject);
-            var subjects = subjectParticipants.Select(x => x.Subject);
-            var result = Mapper.Map<IEnumerable<SubjectDto>>(subjects);
-            return Ok(result);
-        }
-
-        [HttpPost("add-student")]
-        [AuthorizationFilter(Role.Admin)]
-        public IActionResult AddStudent([FromBody] SubjectParticipantDto subjectParticipantDto)
-        {
-            var item = _subjectParticipantRepository.GetSingle(x => x.SubjectId == subjectParticipantDto.SubjectId && x.UserId == subjectParticipantDto.UserId);
-            if (item != null)
-            {
-                return BadRequest("Student is already added to subject");
-            }
-
-            var subjectParticipant = Mapper.Map<SubjectParticipant>(subjectParticipantDto);
-            _subjectParticipantRepository.Add(subjectParticipant);
-            _subjectParticipantRepository.Commit();
-            return Ok();
-        }
-
-        [HttpPost("remove-student")]
-        [AuthorizationFilter(Role.Admin)]
-        public IActionResult RemoveStudent([FromBody] SubjectParticipantDto subjectParticipantDto)
-        {
-            var item = _subjectParticipantRepository.GetSingle(x => x.SubjectId == subjectParticipantDto.SubjectId && x.UserId == subjectParticipantDto.UserId);
-            if (item == null)
-            {
-                return BadRequest("Either subject or student with given id does not exist");
-            }
-
-            _subjectParticipantRepository.Delete(item);
-            _subjectParticipantRepository.Commit();
-            return Ok();
-        }
-
-        [HttpPost("create/{professorId}")]
+        [HttpPost("{professorId}")]
         [AuthorizationFilter(Role.Admin)]
         public IActionResult Create([FromBody] SubjectLiteDto subjectDto, [FromRoute] string professorId)
         {
@@ -129,15 +77,15 @@ namespace SOTIS_backend.Controllers
 
             var subject = Mapper.Map<Subject>(subjectDto);
             subject.Professor = professor;
-            
+
             var subjectDb = _subjectRepository.Add(subject);
             _subjectRepository.Commit();
-            
+
             var result = Mapper.Map<SubjectDto>(subjectDb);
             return Ok(result);
         }
 
-        [HttpDelete("delete/{subjectId}")]
+        [HttpDelete("{subjectId}")]
         [AuthorizationFilter(Role.Admin)]
         public IActionResult Delete([FromRoute] string subjectId)
         {
@@ -160,6 +108,58 @@ namespace SOTIS_backend.Controllers
 
             _subjectRepository.Delete(subject);
             _subjectRepository.Commit();
+            return Ok();
+        }
+
+        [HttpGet("professor")]
+        [AuthorizationFilter(Role.Professor)]
+        public IActionResult GetForProfessor()
+        {
+            var sessionInfo = GetSession();
+            var subjects = _subjectRepository.FindByIncluding(x => x.Professor.Id == sessionInfo.Id, x => x.Professor);
+            var result = Mapper.Map<IEnumerable<SubjectDto>>(subjects);
+            return Ok(result);
+        }
+
+        [HttpGet("student")]
+        [AuthorizationFilter(Role.Student)]
+        public IActionResult GetForStudent()
+        {
+            var sessionInfo = GetSession();
+            var subjectParticipants = _subjectParticipantRepository.FindByIncluding(x => x.UserId == sessionInfo.Id, x => x.Subject);
+            var subjects = subjectParticipants.Select(x => x.Subject);
+            var result = Mapper.Map<IEnumerable<SubjectDto>>(subjects);
+            return Ok(result);
+        }
+
+        [HttpPost("student")]
+        [AuthorizationFilter(Role.Admin)]
+        public IActionResult AddStudent([FromBody] SubjectParticipantDto subjectParticipantDto)
+        {
+            var item = _subjectParticipantRepository.GetSingle(x => x.SubjectId == subjectParticipantDto.SubjectId && x.UserId == subjectParticipantDto.UserId);
+            if (item != null)
+            {
+                return BadRequest("Student is already added to subject");
+            }
+
+            var subjectParticipant = Mapper.Map<SubjectParticipant>(subjectParticipantDto);
+            _subjectParticipantRepository.Add(subjectParticipant);
+            _subjectParticipantRepository.Commit();
+            return Ok();
+        }
+
+        [HttpDelete("student")]
+        [AuthorizationFilter(Role.Admin)]
+        public IActionResult RemoveStudent([FromBody] SubjectParticipantDto subjectParticipantDto)
+        {
+            var item = _subjectParticipantRepository.GetSingle(x => x.SubjectId == subjectParticipantDto.SubjectId && x.UserId == subjectParticipantDto.UserId);
+            if (item == null)
+            {
+                return BadRequest("Either subject or student with given id does not exist");
+            }
+
+            _subjectParticipantRepository.Delete(item);
+            _subjectParticipantRepository.Commit();
             return Ok();
         }
     }

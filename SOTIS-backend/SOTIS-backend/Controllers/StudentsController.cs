@@ -23,7 +23,7 @@ namespace SOTIS_backend.Controllers
             _usersRepository = usersRepository;
         }
 
-        [HttpGet("all")]
+        [HttpGet]
         [AuthorizationFilter(Role.Admin)]
         public IActionResult GetAll()
         {
