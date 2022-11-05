@@ -2,3 +2,5 @@ const host = "https://localhost:5001";
 export const registerRoute = `${host}/api/Users/register`;
 export const loginRoute = `${host}/api/Users/login`;
 export const getAllProfesorsRoute = `${host}/api/Professors/all`;
+export const createSubjectRoute = `${host}/api/Subjects/create`;
+export const getAllSubjectsRoute = `${host}/api/Subjects/get-all`;

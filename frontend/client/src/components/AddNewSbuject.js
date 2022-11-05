@@ -3,7 +3,11 @@ import { Button, Form, Input, Select } from "antd";
 const { Option } = Select;
 import axios from "axios";
 import loader from "../assets/loader.gif";
-import { getAllProfesorsRoute } from "../utils/APIRoutes";
+import { toastOptions } from "../utils/constants";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import { getAllProfesorsRoute, createSubjectRoute } from "../utils/APIRoutes";
 
 function AddNewSbuject() {
   const [data, setData] = useState([]);
@@ -12,10 +16,36 @@ function AddNewSbuject() {
   const [professors, setProfessors] = useState([]);
 
   const onFinish = (values) => {
-    console.log("Success:", values);
+    const token = JSON.stringify(localStorage.getItem("access-token"));
+    const url = createSubjectRoute + `/${values.profesorForSubject}`;
+
+    axios
+      .post(
+        url,
+        {
+          title: values.title,
+          description: values.description,
+          minimumPoints: values.minimumPoints,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(
+              JSON.stringify(localStorage.getItem("access-token"))
+            )}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log("aaaaaaaaaa", res);
+        toast.success("successfully created subject", toastOptions);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
+    toast.error(error.message, toastOptions);
   };
 
   useEffect(() => {
@@ -41,7 +71,7 @@ function AddNewSbuject() {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error(error);
+        console.log(error);
       });
   }, []);
 
