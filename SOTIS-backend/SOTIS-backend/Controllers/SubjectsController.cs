@@ -111,6 +111,25 @@ namespace SOTIS_backend.Controllers
             return Ok();
         }
 
+        [HttpGet("{subjectId}/available-students")]
+        [AuthorizationFilter(Role.Admin)]
+        public IActionResult GetAvailableStudents([FromRoute] string subjectId)
+        {
+            var allStudents = _usersRepository.FindBy(x => x.Role == Role.Student);
+            var subjectParticipantIds = _subjectParticipantRepository.FindBy(x => x.SubjectId == subjectId).Select(x => x.UserId).ToList();
+
+            var availableStudents = new List<User>();
+            foreach (var student in allStudents)
+            {
+                if (!subjectParticipantIds.Contains(student.Id))
+                {
+                    availableStudents.Add(student);
+                }
+            }
+            var result = Mapper.Map<List<UserDto>>(availableStudents);
+            return Ok(result);
+        }
+
         [HttpGet("professor")]
         [AuthorizationFilter(Role.Professor)]
         public IActionResult GetForProfessor()
