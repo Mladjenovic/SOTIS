@@ -14,6 +14,7 @@ import {
   PlusCircleTwoTone,
   LogoutOutlined,
   BookOutlined,
+  NodeIndexOutlined,
 } from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -26,6 +27,7 @@ import AllSubjectsAdmin from "../pages/admin/AllSubjectsAdmin";
 import AddNewSbuject from "../components/admin/AddNewSbuject";
 import Professor from "../pages/professor/Professor";
 import AllSubjectsProfessor from "../pages/professor/AllSubjectsProfessor";
+import ExampleGraph from "../pages/professor/ExampleGraph";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -81,9 +83,11 @@ function CustomLayout() {
             </Menu.Item>
           )}
           {currentUser && currentUser.Role === 1 && (
-            <Menu.Item key="6" icon={<BookOutlined />}>
-              <Link to="/professor">Subjects</Link>
-            </Menu.Item>
+            <>
+              <Menu.Item key="6" icon={<BookOutlined />}>
+                <Link to="/professor">Subjects</Link>
+              </Menu.Item>
+            </>
           )}
         </Menu>
       </Sider>
@@ -117,6 +121,10 @@ function CustomLayout() {
               {/* Professor routes */}
               <Route exact path="/professor" element={<Professor />}>
                 <Route path="/professor" element={<AllSubjectsProfessor />} />
+                <Route
+                  path="/professor/exampleGraph"
+                  element={<ExampleGraph />}
+                />
                 <Route path="*" element={<AllSubjectsAdmin />} />
               </Route>
             </Routes>

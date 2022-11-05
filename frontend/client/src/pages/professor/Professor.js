@@ -4,7 +4,7 @@ const { Sider, Content } = Layout;
 
 import { BrowserRouter as Router, Link, Outlet } from "react-router-dom";
 
-import { PlusOutlined, OrderedListOutlined } from "@ant-design/icons";
+import { OrderedListOutlined, NodeIndexOutlined } from "@ant-design/icons";
 
 function Professor() {
   return (
@@ -23,6 +23,10 @@ function Professor() {
           <Button type="primary" ghost style={{ border: "none" }}>
             <OrderedListOutlined />
             <Link to="/professor">&nbsp;All subjects</Link>
+          </Button>
+          <Button type="primary" ghost style={{ border: "none" }}>
+            <NodeIndexOutlined />
+            <Link to="/professor/exampleGraph">&nbsp;ExampleGraph</Link>
           </Button>
         </Row>
         {/* <Row>
