@@ -34,7 +34,7 @@ namespace SOTIS_backend.Controllers
         }
 
         [HttpGet]
-        [AuthorizationFilter(Role.Admin)]
+        [AuthorizationFilter(Role.Admin, Role.Professor)]
         public IActionResult GetAll()
         {
             var subjects = _subjectRepository.GetAll();
@@ -43,7 +43,7 @@ namespace SOTIS_backend.Controllers
         }
 
         [HttpGet("{subjectId}")]
-        [AuthorizationFilter(Role.Admin)]
+        [AuthorizationFilter(Role.Admin, Role.Professor, Role.Student)]
         public IActionResult GetDetails([FromRoute] string subjectId)
         {
             var subject = _subjectRepository.GetSingle(x => x.Id == subjectId, x => x.Students, x => x.Professor);

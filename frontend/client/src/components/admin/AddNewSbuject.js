@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Select } from "antd";
 const { Option } = Select;
 import axios from "axios";
-import loader from "../assets/loader.gif";
-import { toastOptions } from "../utils/constants";
+import loader from "../../assets/loader.gif";
+import { toastOptions } from "../../utils/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { getAllProfesorsRoute, createSubjectRoute } from "../utils/APIRoutes";
+import {
+  getAllProfesorsRoute,
+  createSubjectRoute,
+} from "../../utils/APIRoutes";
 
 function AddNewSbuject() {
   const [data, setData] = useState([]);
@@ -36,11 +39,14 @@ function AddNewSbuject() {
         }
       )
       .then((res) => {
-        console.log("aaaaaaaaaa", res);
-        toast.success("successfully created subject", toastOptions);
+        toast.success(
+          `successfully created subject: ${res.data.title}`,
+          toastOptions
+        );
       })
       .catch((error) => {
         console.error(error);
+        toast.error(error.message, toastOptions);
       });
   };
   const onFinishFailed = (errorInfo) => {
@@ -78,7 +84,17 @@ function AddNewSbuject() {
   return (
     <>
       {isLoading ? (
-        <img src={loader} alt="loader" className="loader" />
+        <img
+          src={loader}
+          alt="loader"
+          className="loader"
+          style={{
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+            width: "50%",
+          }}
+        />
       ) : (
         <div>
           <Form
@@ -163,6 +179,7 @@ function AddNewSbuject() {
               </Button>
             </Form.Item>
           </Form>
+          <ToastContainer></ToastContainer>
         </div>
       )}
     </>

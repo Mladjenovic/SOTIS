@@ -18,12 +18,14 @@ import {
 
 const { Header, Content, Footer, Sider } = Layout;
 
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import Home from "../pages/Home";
-import Admin from "../pages/Admin";
-import AllSubjectsAdmin from "../pages/AllSubjectsAdmin";
-import AddNewSbuject from "../components/AddNewSbuject";
+import Login from "../pages/general/Login";
+import Register from "../pages/general/Register";
+import Home from "../pages/general/Home";
+import Admin from "../pages/admin/Admin";
+import AllSubjectsAdmin from "../pages/admin/AllSubjectsAdmin";
+import AddNewSbuject from "../components/admin/AddNewSbuject";
+import Professor from "../pages/professor/Professor";
+import AllSubjectsProfessor from "../pages/professor/AllSubjectsProfessor";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -78,6 +80,11 @@ function CustomLayout() {
               <Link to="/admin">Subjects</Link>
             </Menu.Item>
           )}
+          {currentUser && currentUser.Role === 1 && (
+            <Menu.Item key="6" icon={<BookOutlined />}>
+              <Link to="/professor">Subjects</Link>
+            </Menu.Item>
+          )}
         </Menu>
       </Sider>
       <Layout className="site-layout">
@@ -97,12 +104,19 @@ function CustomLayout() {
             style={{ padding: 24, minHeight: 360 }}
           >
             <Routes>
+              {/* General routes */}
               <Route exact path="/" element={<Home />}></Route>
               <Route exact path="/register" element={<Register />} />
               <Route exact path="/login" element={<Login />} />
+              {/* Admin routes */}
               <Route exact path="/admin" element={<Admin />}>
                 <Route path="/admin" element={<AllSubjectsAdmin />} />
                 <Route path="/admin/addSubject" element={<AddNewSbuject />} />
+                <Route path="*" element={<AllSubjectsAdmin />} />
+              </Route>
+              {/* Professor routes */}
+              <Route exact path="/professor" element={<Professor />}>
+                <Route path="/professor" element={<AllSubjectsProfessor />} />
                 <Route path="*" element={<AllSubjectsAdmin />} />
               </Route>
             </Routes>

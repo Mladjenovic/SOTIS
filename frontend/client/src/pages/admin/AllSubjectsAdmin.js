@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Space, Table, Tag } from "antd";
-import { getAllSubjectsRoute } from "../utils/APIRoutes";
-import loader from "../assets/loader.gif";
+import { getAllSubjectsRoute } from "../../utils/APIRoutes";
+import loader from "../../assets/loader.gif";
 
 function AllSubjectsAdmin() {
   const [subjects, setSubjects] = useState([]);
@@ -25,6 +25,11 @@ function AllSubjectsAdmin() {
       title: "MinimumPoints",
       dataIndex: "minimumPoints",
       key: "minimumPoints",
+    },
+    {
+      title: "Students",
+      dataIndex: "students",
+      key: "students",
     },
   ];
 
@@ -50,7 +55,19 @@ function AllSubjectsAdmin() {
   return (
     <>
       {isLoading ? (
-        <img src={loader} alt="loader" className="loader" />
+        <img
+          src={loader}
+          alt="loader"
+          className="loader"
+          style={{
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+            width: "50%",
+            maxHeight: "400px",
+            maxWidth: "400px",
+          }}
+        />
       ) : (
         <div style={{ color: "black" }}>
           <Table dataSource={subjects} columns={columns} />
