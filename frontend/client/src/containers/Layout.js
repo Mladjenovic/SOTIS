@@ -14,10 +14,11 @@ import {
   PlusCircleTwoTone,
   LogoutOutlined,
   BookOutlined,
-  NodeIndexOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = Layout;
+import book from "../assets/book-57.gif";
 
 import Login from "../pages/general/Login";
 import Register from "../pages/general/Register";
@@ -30,6 +31,8 @@ import AllSubjectsProfessor from "../pages/professor/AllSubjectsProfessor";
 import ExampleGraph from "../pages/professor/ExampleGraph";
 import AdminSubjectStudentsInfo from "../pages/admin/AdminSubjectStudentsInfo";
 import AdminAddNewStudent from "../pages/admin/AdminAddNewStudent";
+import AllTestsForSubjectProfessor from "../pages/professor/AllTestsForSubjectProfessor";
+import AddNewTestProfessor from "../pages/professor/AddNewTestProfessor";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -58,7 +61,20 @@ function CustomLayout() {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
-        <div className="logo" />
+        <img
+          src={book}
+          alt="book"
+          className="book"
+          style={{
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+            marginBottom: "1rem",
+            width: "50%",
+            maxHeight: "400px",
+            maxWidth: "400px",
+          }}
+        />
         <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
           <Menu.Item key="1" icon={<HomeOutlined />}>
             <Link to="/">Home</Link>
@@ -98,9 +114,19 @@ function CustomLayout() {
         <Content style={{ margin: "0 16px" }}>
           {currentUser && (
             <Breadcrumb style={{ margin: "16px 0" }}>
-              <Breadcrumb.Item>User</Breadcrumb.Item>
               <Breadcrumb.Item>
-                {currentUser.Name} Role {currentUser.Role}
+                User <UserOutlined />
+              </Breadcrumb.Item>
+
+              <Breadcrumb.Item>
+                <b>{currentUser.Name}</b>&nbsp;&nbsp; Role: &nbsp;{" "}
+                {currentUser.Role == 0 ? (
+                  <b>Admin</b>
+                ) : currentUser.Role == 1 ? (
+                  <b>Professor</b>
+                ) : (
+                  <b>Student</b>
+                )}
               </Breadcrumb.Item>
             </Breadcrumb>
           )}
@@ -134,6 +160,14 @@ function CustomLayout() {
                 <Route
                   path="/professor/exampleGraph"
                   element={<ExampleGraph />}
+                />
+                <Route
+                  path="/professor/subject/tests/:subjectId"
+                  element={<AllTestsForSubjectProfessor />}
+                />
+                <Route
+                  path="/professor/addNewTest/:subjectId"
+                  element={<AddNewTestProfessor />}
                 />
                 <Route path="*" element={<AllSubjectsAdmin />} />
               </Route>

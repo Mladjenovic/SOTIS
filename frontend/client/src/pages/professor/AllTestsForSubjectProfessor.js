@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
+
 import axios from "axios";
 import { Table, Button } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import { toastOptions } from "../../utils/constants";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
+import { getAllTestForSubjectRoute } from "../../utils/APIRoutes";
 import loader from "../../assets/loader.gif";
 
-import "react-toastify/dist/ReactToastify.css";
-import { useParams } from "react-router-dom";
-import { getAllStudentsForSubjectRoute } from "../../utils/APIRoutes";
-
-function AdminSubjectStudentsInfo() {
+function AllTestsForSubjectProfessor() {
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState([]);
+
   const params = useParams();
   const navigate = useNavigate();
 
@@ -39,12 +39,12 @@ function AdminSubjectStudentsInfo() {
     },
   ];
 
-  const handleAddNewStudent = () => {
-    navigate(`/admin/addNewStudent/${params.subjectId}`);
+  const handleAddNewTest = () => {
+    navigate(`/professor/addNewTest/${params.subjectId}`);
   };
 
   useEffect(() => {
-    const url = getAllStudentsForSubjectRoute + `/${params.subjectId}`;
+    const url = getAllTestForSubjectRoute + `/${params.subjectId}`;
     axios
       .get(url, {
         headers: {
@@ -54,7 +54,8 @@ function AdminSubjectStudentsInfo() {
         },
       })
       .then((res) => {
-        setTableData(res.data.students);
+        console.log(res.data);
+        setTableData(res.data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -82,7 +83,7 @@ function AdminSubjectStudentsInfo() {
       ) : (
         <>
           <div style={{ color: "black" }}>
-            <Button style={{ margin: "0.15rem" }} onClick={handleAddNewStudent}>
+            <Button style={{ margin: "0.15rem" }} onClick={handleAddNewTest}>
               Add new student
             </Button>
             <Table dataSource={tableData} columns={columns} rowKey="id" />
@@ -94,4 +95,4 @@ function AdminSubjectStudentsInfo() {
   );
 }
 
-export default AdminSubjectStudentsInfo;
+export default AllTestsForSubjectProfessor;

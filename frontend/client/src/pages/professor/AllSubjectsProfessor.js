@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Table } from "antd";
 import { getAllSubjectsRoute } from "../../utils/APIRoutes";
+import { useNavigate } from "react-router-dom";
 import loader from "../../assets/loader.gif";
 
 function AllSubjectsProfessor() {
   const [subjects, setSubjects] = useState([]);
-  const [currentUser, setCurrentUser] = useState(undefined);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -32,10 +33,19 @@ function AllSubjectsProfessor() {
       dataIndex: "minimumPoints",
       key: "minimumPoints",
     },
+    {
+      title: "tests",
+      dataIndex: "tests",
+      key: "tests",
+      render: (text) => <button className="button">all tests</button>,
+    },
   ];
 
+  const handleTestsClick = (subjectId) => {
+    navigate(`/professor/subject/tests/${subjectId}`);
+  };
+
   useEffect(() => {
-    setCurrentUser(JSON.parse(localStorage.getItem("sotis-app-user")));
     axios
       .get(getAllSubjectsRoute, {
         headers: {
@@ -72,7 +82,22 @@ function AllSubjectsProfessor() {
         />
       ) : (
         <div style={{ color: "black" }}>
-          <Table dataSource={subjects} columns={columns} rowKey="id" />
+          <Table
+            dataSource={subjects}
+            columns={columns}
+            rowKey="id"
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: (event) => {
+                  handleTestsClick(record.id);
+                }, // click row
+                onDoubleClick: (event) => {}, // double click row
+                onContextMenu: (event) => {}, // right button click row
+                onMouseEnter: (event) => {}, // mouse enter row
+                onMouseLeave: (event) => {}, // mouse leave row
+              };
+            }}
+          />
         </div>
       )}
     </>
