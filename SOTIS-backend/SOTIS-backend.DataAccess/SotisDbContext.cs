@@ -5,20 +5,6 @@ namespace SOTIS_backend.DataAccess
 {
     public class SotisDbContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
-
-        public DbSet<ProfessorAnswer> ProfessorAnswers { get; set; }
-
-        public DbSet<Question> Questions { get; set; }
-
-        public DbSet<Section> Sections { get; set; }
-
-        public DbSet<Subject> Subjects { get; set; }
-
-        public DbSet<Test> Tests { get; set; }
-
-        public DbSet<SubjectParticipant> SubjectParticipants { get; set; }
-
         public SotisDbContext(DbContextOptions<SotisDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

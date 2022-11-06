@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SOTIS_backend.DataAccess.Models
 {
-    [Table("Users")]
+    [Table("Users")]  // todo: split in separate classes per role
     public class User : IEntityBase
     {
         [Key]
@@ -24,6 +24,6 @@ namespace SOTIS_backend.DataAccess.Models
 
         public Role Role { get; set; }
 
-        public IEnumerable<SubjectParticipant> SubjectParticipants { get; set; }
+        public IEnumerable<SubjectParticipant> SubjectParticipants { get; set; }  // applies only to student role
     }
 }

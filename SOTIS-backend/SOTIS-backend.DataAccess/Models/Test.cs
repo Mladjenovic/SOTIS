@@ -23,5 +23,7 @@ namespace SOTIS_backend.DataAccess.Models
         public string SubjectId { get; set; }
 
         public IEnumerable<Section> Sections { get; set; }
+
+        public IEnumerable<TestResult> TestResults { get; set; }
     }
 }
