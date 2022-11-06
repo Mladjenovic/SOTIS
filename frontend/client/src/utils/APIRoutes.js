@@ -6,4 +6,6 @@ export const getAllProfesorsRoute = `${host}/api/Professors`;
 export const createSubjectRoute = `${host}/api/Subjects`;
 export const getAllSubjectsRoute = `${host}/api/Subjects`;
 
-export const getAllStudentsRoute = `${host}/api/Subjects/student`;
+export const getAllStudentsForSubjectRoute = `${host}/api/Subjects`;
+export const availableStudentsRoute = `${host}/api/Subjects`;
+export const addNewStudentRoute = `${host}/api/Subjects/student`;

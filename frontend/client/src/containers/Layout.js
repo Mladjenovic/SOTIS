@@ -28,6 +28,8 @@ import AddNewSbuject from "../components/admin/AddNewSbuject";
 import Professor from "../pages/professor/Professor";
 import AllSubjectsProfessor from "../pages/professor/AllSubjectsProfessor";
 import ExampleGraph from "../pages/professor/ExampleGraph";
+import AdminSubjectStudentsInfo from "../pages/admin/AdminSubjectStudentsInfo";
+import AdminAddNewStudent from "../pages/admin/AdminAddNewStudent";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -116,6 +118,14 @@ function CustomLayout() {
               <Route exact path="/admin" element={<Admin />}>
                 <Route path="/admin" element={<AllSubjectsAdmin />} />
                 <Route path="/admin/addSubject" element={<AddNewSbuject />} />
+                <Route
+                  path="/admin/subjectStudentsInfo/:subjectId"
+                  element={<AdminSubjectStudentsInfo />}
+                />
+                <Route
+                  path="/admin/addNewStudent/:subjectId"
+                  element={<AdminAddNewStudent />}
+                />
                 <Route path="*" element={<AllSubjectsAdmin />} />
               </Route>
               {/* Professor routes */}
