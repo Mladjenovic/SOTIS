@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Select } from "antd";
 const { Option } = Select;
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import loader from "../../assets/loader.gif";
 import { toastOptions } from "../../utils/constants";
@@ -17,6 +18,8 @@ function AddNewSbuject() {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [professors, setProfessors] = useState([]);
+
+  const navigate = useNavigate();
 
   const onFinish = (values) => {
     const token = JSON.stringify(localStorage.getItem("access-token"));
@@ -43,6 +46,9 @@ function AddNewSbuject() {
           `successfully created subject: ${res.data.title}`,
           toastOptions
         );
+        setTimeout(() => {
+          navigate("/admin");
+        }, 5000);
       })
       .catch((error) => {
         console.error(error);
