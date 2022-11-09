@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Button, Form, Input, Select } from "antd";
+import { useParams, useNavigate } from "react-router-dom";
+import { Button, Form, Select } from "antd";
 const { Option } = Select;
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 import { toastOptions } from "../../utils/constants";
 import { ToastContainer, toast } from "react-toastify";

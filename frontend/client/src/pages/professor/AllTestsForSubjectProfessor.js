@@ -23,19 +23,19 @@ function AllTestsForSubjectProfessor() {
       key: "id",
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
     },
     {
-      title: "Surname",
-      dataIndex: "surname",
+      title: "SubjectId",
+      dataIndex: "subjectId",
       key: "surname",
     },
     {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
+      title: "MinimumPoints",
+      dataIndex: "minimumPoints",
+      key: "minimumPoints",
     },
   ];
 
@@ -84,7 +84,7 @@ function AllTestsForSubjectProfessor() {
         <>
           <div style={{ color: "black" }}>
             <Button style={{ margin: "0.15rem" }} onClick={handleAddNewTest}>
-              Add new student
+              Add new test
             </Button>
             <Table dataSource={tableData} columns={columns} rowKey="id" />
           </div>
