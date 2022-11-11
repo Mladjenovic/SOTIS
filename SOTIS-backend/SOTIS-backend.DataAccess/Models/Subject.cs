@@ -23,5 +23,7 @@ namespace SOTIS_backend.DataAccess.Models
         public User Professor { get; set; }
 
         public IEnumerable<SubjectParticipant> Students { get; set; }
+
+        public IEnumerable<Problem> Problems { get; set; }
     }
 }
