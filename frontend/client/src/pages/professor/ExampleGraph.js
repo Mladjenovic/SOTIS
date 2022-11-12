@@ -1,7 +1,9 @@
-import React, { useState, useCallback, Fragment } from "react";
+import React, { useState, useRef, useCallback, Fragment } from "react";
 
 import ReactFlow, {
+  ReactFlowProvider,
   addEdge,
+  updateEdge,
   addNode,
   Background,
   Controls,
@@ -14,8 +16,8 @@ import ReactFlow, {
 import CustomEdge from "../../components/professor/CustomEdge";
 import Sidebar from "../../components/professor/Sidebar";
 
-import localforage from "localforage";
 import { v4 as uuidv4 } from 'uuid';
+import localforage from "localforage";
 
 localforage.config({
   name: "react-flow-docs",
@@ -24,6 +26,7 @@ localforage.config({
 
 const flowKey = "example-flow";
 
+/*
 const initialNodes = [
   { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 0 } },
   { id: '2', data: { label: 'Node 2' }, position: { x: 150, y: 100 } },
@@ -31,7 +34,7 @@ const initialNodes = [
 ];
 
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
-
+*/
 const onLoad = (reactFlowInstance) => {
   reactFlowInstance.fitView();
 };
@@ -40,118 +43,125 @@ const edgeTypes = {
   custom: CustomEdge,
 };
 
+const defaultEdgeOptions = {
+  style: { strokeWidth: 2, stroke: 'black' },
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    color: 'black',
+  },
+};
+
+
+const getId = () => uuidv4();
+
 const ExampleGraph = () => {
+  const edgeUpdateSuccessful = useRef(true);
+  const reactFlowWrapper = useRef(null);
   const [rfInstance, setRfInstance] = useState(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes] = useNodesState([]);
+  const [edges, setEdges] = useEdgesState([]);
   const [name, setName] = useState("");
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
-  const onPrintElements = () => {
-
-    console.log("Nodes: ", nodes);
-    console.log("Edges: ", edges);
-  };
-
-  const addNode = () => {
-    setNodes((e) =>
-    {
-      const node = {
-        id: uuidv4(),
-        data: { label: `${name}` },
-        position: {
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-        },
-      }
-      //setNodes((nds) => nds.concat(node));
-      e.concat(node)
-      //addNode(node, e);
-    });
-    console.log(nodes);
-  };
-
-  /*
-  const onSave = useCallback(() => {
-    if (rfInstance) {
-      const flow = rfInstance.toObject();
-      localforage.setItem(flowKey, flow);
-      console.log(localforage.getItem(flowKey));
-    }
-  }, [rfInstance]);
-
-  //////////////////////////////////////////////
-  const onRestore = useCallback(() => {
-    const restoreFlow = async () => {
-      const flow = await localforage.getItem(flowKey);
-      console.log(flow);
-
-      if (flow) {
-        const [x = 0, y = 0] = flow.position;
-        setElements(flow.elements || []);
-      }
-    };
-
-    restoreFlow();
-  }, [setElements]);
-  //////////////////////////////////////////////
-
-  
-  //////////////////////////////////////////////
-  // Node position update after draging
-  const onNodeDragStop = (event, node) => {
-    let elementsCopy = elements;
-    let index = elements.findIndex((element) => element.id === node.id);
-    let newPositionNode = elements[index];
-    newPositionNode.position = node.position;
-    elementsCopy.splice(index, 1, newPositionNode);
-    setElements(elementsCopy);
-  };
-  //////////////////////////////////////////////
-  */
- 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
-  const defaultEdgeOptions = {
-    style: { strokeWidth: 2, stroke: 'black' },
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-      color: 'black',
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onDrop = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const type = event.dataTransfer.getData('application/reactflow');
+
+      // check if the dropped element is valid
+      if (typeof type === 'undefined' || !type) {
+        return;
+      }
+
+      const position = reactFlowInstance.project({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      });
+      const newNode = {
+        id: getId(),
+        position,
+        data: { label: type },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
     },
+    [reactFlowInstance]
+  );
+
+  const onEdgeUpdateStart = useCallback(() => {
+    edgeUpdateSuccessful.current = false;
+  }, []);
+
+  const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
+    edgeUpdateSuccessful.current = true;
+    setEdges((els) => updateEdge(oldEdge, newConnection, els));
+  }, []);
+
+  const onEdgeUpdateEnd = useCallback((_, edge) => {
+    if (!edgeUpdateSuccessful.current) {
+      setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+    }
+
+    edgeUpdateSuccessful.current = true;
+  }, []);
+
+  const deleteNodeById = (id) => {
+    setNodes(nds => nds.filter(node => node.id !== id));
   };
+
+  const onNodesChange = useCallback(
+    (changes) => setNodes((ns) => applyNodeChanges(changes, ns)),
+    []
+  );
+  const onEdgesChange = useCallback(
+    (changes) => setEdges((es) => applyEdgeChanges(changes, es)),
+    []
+  );
 
   return (
     <Fragment>
       <div style={{display: "flex", flexDirection: "row"}}>
         <div style={{width: "90%"}}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            //onLoad={setRfInstance}
-            style={{ width: "100%", height: "80vh", border: "1px solid #16001E" }}
-            onConnect={onConnect}
-            connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
-            connectionLineType="bezier"
-            defaultEdgeOptions={defaultEdgeOptions}
-            snapToGrid={true}
-            snapGrid={[16, 16]}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            deleteKeyCode={46}
-            selectionKeyCode={17}
-            //onNodeDragStop={onNodeDragStop}
-            edgeTypes={edgeTypes}
-          >
-            <Background color="#888" gap={16} />
-            <MiniMap
-              style={{ border: "1px solid #16001E" }}
-              nodeColor={(n) => {
-                if (n.type === "input") return "blue";
-
-                return "#FFCC00";
-              }}
-            />
-            <Controls />
-          </ReactFlow>
+          <ReactFlowProvider>
+            <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onInit={setReactFlowInstance}
+                onDrop={onDrop}
+                onDragOver={onDragOver}
+                //onLoad={setRfInstance}
+                style={{ width: "100%", height: "80vh", border: "1px solid #16001E" }}
+                onConnect={onConnect}
+                connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
+                connectionLineType="bezier"
+                defaultEdgeOptions={defaultEdgeOptions}
+                snapToGrid={true}
+                snapGrid={[16, 16]}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                deleteKeyCode={46}
+                selectionKeyCode={17}
+                //onNodeDragStop={onNodeDragStop}
+                edgeTypes={edgeTypes}
+                onEdgeUpdate={onEdgeUpdate}
+                onEdgeUpdateStart={onEdgeUpdateStart}
+                onEdgeUpdateEnd={onEdgeUpdateEnd}
+              >
+                <Background color="#888" gap={16} />
+                <Controls />
+              </ReactFlow>
+            </div>
+          </ReactFlowProvider>
         </div>
         <div style={{overflow: "auto"}}>
           <Sidebar />
