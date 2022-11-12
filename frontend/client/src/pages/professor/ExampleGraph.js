@@ -10,14 +10,17 @@ import ReactFlow, {
   Controls,
   MiniMap,
   MarkerType,
-  applyNodeChanges, applyEdgeChanges,
-  useNodesState, useEdgesState
+  applyNodeChanges,
+  applyEdgeChanges,
+  useNodesState,
+  useEdgesState,
 } from "react-flow-renderer";
+import { useNavigate, useParams } from "react-router-dom";
 
 import CustomEdge from "../../components/professor/CustomEdge";
 import Sidebar from "../../components/professor/Sidebar";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import localforage from "localforage";
 
 localforage.config({
@@ -45,17 +48,18 @@ const edgeTypes = {
 };
 
 const defaultEdgeOptions = {
-  style: { strokeWidth: 2, stroke: 'black' },
+  style: { strokeWidth: 2, stroke: "black" },
   markerEnd: {
     type: MarkerType.ArrowClosed,
-    color: 'black',
+    color: "black",
   },
 };
-
 
 const getId = () => uuidv4();
 
 const ExampleGraph = () => {
+  const navigate = useNavigate();
+  const params = useParams();
   const edgeUpdateSuccessful = useRef(true);
   const reactFlowWrapper = useRef(null);
   const [rfInstance, setRfInstance] = useState(null);
@@ -65,11 +69,14 @@ const ExampleGraph = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [shouldDelete, setShouldDelete] = useState(false);
 
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.dropEffect = "move";
   }, []);
 
   const onDrop = useCallback(
@@ -77,10 +84,10 @@ const ExampleGraph = () => {
       event.preventDefault();
 
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      const type = event.dataTransfer.getData('application/reactflow');
+      const type = event.dataTransfer.getData("application/reactflow");
 
       // check if the dropped element is valid
-      if (typeof type === 'undefined' || !type) {
+      if (typeof type === "undefined" || !type) {
         return;
       }
 
@@ -126,16 +133,16 @@ const ExampleGraph = () => {
   );
 
   const deleteNodeById = (id) => {
-    setNodes(nds => nds.filter(node => node.id !== id));
+    setNodes((nds) => nds.filter((node) => node.id !== id));
   };
 
   const deleteEdgeById = (id) => {
-    setEdges(eds => eds.filter(edge => edge.id !== id));
+    setEdges((eds) => eds.filter((edge) => edge.id !== id));
   };
 
   const onNodeClick = (event, node) => {
     if (shouldDelete) {
-      const edgesToRemove = getConnectedEdges([node], edges)
+      const edgesToRemove = getConnectedEdges([node], edges);
       edgesToRemove.map((edge) => deleteEdgeById(edge.id));
       deleteNodeById(node.id);
     }
@@ -143,8 +150,8 @@ const ExampleGraph = () => {
 
   return (
     <Fragment>
-      <div style={{display: "flex", flexDirection: "row"}}>
-        <div style={{width: "90%"}}>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div style={{ width: "90%" }}>
           <ReactFlowProvider>
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
               <ReactFlow
@@ -154,7 +161,11 @@ const ExampleGraph = () => {
                 onDrop={onDrop}
                 onDragOver={onDragOver}
                 //onLoad={setRfInstance}
-                style={{ width: "100%", height: "80vh", border: "1px solid #16001E" }}
+                style={{
+                  width: "100%",
+                  height: "80vh",
+                  border: "1px solid #16001E",
+                }}
                 onConnect={onConnect}
                 connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
                 connectionLineType="bezier"
@@ -174,7 +185,9 @@ const ExampleGraph = () => {
               >
                 <Background color="#888" gap={16} />
                 <Controls />
-                <div style={{ position: 'absolute', left: 10, top: 10, zIndex: 4 }}>
+                <div
+                  style={{ position: "absolute", left: 10, top: 10, zIndex: 4 }}
+                >
                   <div>
                     <label htmlFor="shouldDelete">
                       delete nodes on click
@@ -182,7 +195,9 @@ const ExampleGraph = () => {
                         id="shouldDelete"
                         type="checkbox"
                         checked={shouldDelete}
-                        onChange={(event) => setShouldDelete(event.target.checked)}
+                        onChange={(event) =>
+                          setShouldDelete(event.target.checked)
+                        }
                         className="react-flow__ishidden"
                       />
                     </label>
@@ -192,8 +207,8 @@ const ExampleGraph = () => {
             </div>
           </ReactFlowProvider>
         </div>
-        <div style={{overflow: "auto"}}>
-          <Sidebar />
+        <div style={{ overflow: "auto", marginLeft: "1rem" }}>
+          <Sidebar subjectId={params.subjectId} />
         </div>
       </div>
     </Fragment>

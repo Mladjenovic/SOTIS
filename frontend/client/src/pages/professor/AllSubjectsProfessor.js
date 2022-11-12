@@ -66,6 +66,23 @@ function AllSubjectsProfessor() {
         );
       },
     },
+    {
+      key: "7",
+      title: "Graph",
+      render: (record) => {
+        return (
+          <>
+            <button
+              onClick={() => {
+                handleGraphClick(record);
+              }}
+            >
+              graph
+            </button>
+          </>
+        );
+      },
+    },
   ];
 
   useEffect(() => {
@@ -91,6 +108,9 @@ function AllSubjectsProfessor() {
   };
   const handleAddProblemClick = (record) => {
     navigate(`/professor/subject/problems/${record.id}`);
+  };
+  const handleGraphClick = (record) => {
+    navigate(`/professor/subject/graph/${record.id}`);
   };
 
   return (

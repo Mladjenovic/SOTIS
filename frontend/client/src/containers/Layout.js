@@ -170,6 +170,10 @@ function CustomLayout() {
                   element={<ProblemsForSubjectProfessor />}
                 />
                 <Route
+                  path="/professor/subject/graph/:subjectId"
+                  element={<ExampleGraph />}
+                />
+                <Route
                   path="/professor/addNewTest/:subjectId"
                   element={<AddNewTestProfessor />}
                 />

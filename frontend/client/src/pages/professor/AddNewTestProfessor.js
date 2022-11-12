@@ -24,29 +24,25 @@ function AddNewTestProfessor() {
 
   const getEmptySection = () => {
     return {
-      name: "", 
-      questions: [
-        getEmptyQuestion()
-      ]
-    }
-  }
+      name: "",
+      questions: [getEmptyQuestion()],
+    };
+  };
 
   const getEmptyQuestion = () => {
     return {
-      text: "", 
-      pointsPerQuestion: 0, 
-      answers: [
-        getEmptyAnswer()
-      ]
-    }
-  }
+      text: "",
+      pointsPerQuestion: 0,
+      answers: [getEmptyAnswer()],
+    };
+  };
 
   const getEmptyAnswer = () => {
     return {
       text: "",
-      isCorrect: false
-    }
-  }
+      isCorrect: false,
+    };
+  };
 
   const handleSectionNameChange = (index, event) => {
     let data = [...sections];
@@ -67,10 +63,11 @@ function AddNewTestProfessor() {
 
   const handleQuestionNameChange = (sectionIndex, questionIndex, event) => {
     let data = [...sections];
-    data[sectionIndex].questions[questionIndex][event.target.name] = event.target.value;
+    data[sectionIndex].questions[questionIndex][event.target.name] =
+      event.target.value;
     setSections(data);
   };
-  
+
   const addQuestion = (sectionIndex) => {
     let newQuestion = getEmptyQuestion();
     let data = [...sections];
@@ -90,28 +87,47 @@ function AddNewTestProfessor() {
         {sections.map((section, sectionIndex) => {
           return (
             <div key={sectionIndex}>
-              <button onClick={() => removeSection(sectionIndex)}>Remove Section</button>
+              <button onClick={() => removeSection(sectionIndex)}>
+                Remove Section
+              </button>
               <input
                 name="name"
                 placeholder="Name"
                 value={section.name}
-                onChange={(event) => handleSectionNameChange(sectionIndex, event)}
+                onChange={(event) =>
+                  handleSectionNameChange(sectionIndex, event)
+                }
               />
-              {sections[sectionIndex].questions.map((question, questionIndex) => {
+              {sections[sectionIndex].questions.map(
+                (question, questionIndex) => {
                   return (
                     <div key={questionIndex}>
-                      <button onClick={() => removeQuestion(sectionIndex, questionIndex)}>Remove Question</button>
+                      <button
+                        onClick={() =>
+                          removeQuestion(sectionIndex, questionIndex)
+                        }
+                      >
+                        Remove Question
+                      </button>
                       <input
                         name="text"
                         placeholder="Text"
                         value={question.text}
-                        onChange={(event) => handleQuestionNameChange(sectionIndex, questionIndex, event)}
+                        onChange={(event) =>
+                          handleQuestionNameChange(
+                            sectionIndex,
+                            questionIndex,
+                            event
+                          )
+                        }
                       />
                     </div>
-                    
                   );
-                })}
-                <button onClick={() => addQuestion(sectionIndex)}>Add Question</button>
+                }
+              )}
+              <button onClick={() => addQuestion(sectionIndex)}>
+                Add Question
+              </button>
             </div>
           );
         })}
