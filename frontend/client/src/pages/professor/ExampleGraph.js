@@ -121,57 +121,39 @@ const ExampleGraph = () => {
 
   return (
     <Fragment>
-      <div style={{display: flex, flexDirection: row, flexWrap: wrap}}>
-        <div>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          //onLoad={setRfInstance}
-          style={{ width: "100%", height: "80vh", border: "1px solid #16001E" }}
-          onConnect={onConnect}
-          connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
-          connectionLineType="bezier"
-          defaultEdgeOptions={defaultEdgeOptions}
-          snapToGrid={true}
-          snapGrid={[16, 16]}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          deleteKeyCode={46}
-          selectionKeyCode={17}
-          //onNodeDragStop={onNodeDragStop}
-          edgeTypes={edgeTypes}
-        >
-          <Background color="#888" gap={16} />
-          <MiniMap
-            style={{ border: "1px solid #16001E" }}
-            nodeColor={(n) => {
-              if (n.type === "input") return "blue";
-
-              return "#FFCC00";
-            }}
-          />
-          <Controls />
-        </ReactFlow>
-        <div>
-          <input
-            type="text"
-            onChange={(e) => setName(e.target.value)}
-            name="title"
-          />
-          <button type="button" onClick={addNode}>
-            Add Node
-          </button>
-          
-          <button
-            type="button"
-            onClick={onPrintElements}
-            style={{ marginLeft: 1 }}
+      <div style={{display: "flex", flexDirection: "row"}}>
+        <div style={{width: "90%"}}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            //onLoad={setRfInstance}
+            style={{ width: "100%", height: "80vh", border: "1px solid #16001E" }}
+            onConnect={onConnect}
+            connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
+            connectionLineType="bezier"
+            defaultEdgeOptions={defaultEdgeOptions}
+            snapToGrid={true}
+            snapGrid={[16, 16]}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            deleteKeyCode={46}
+            selectionKeyCode={17}
+            //onNodeDragStop={onNodeDragStop}
+            edgeTypes={edgeTypes}
           >
-            print elements
-          </button>
+            <Background color="#888" gap={16} />
+            <MiniMap
+              style={{ border: "1px solid #16001E" }}
+              nodeColor={(n) => {
+                if (n.type === "input") return "blue";
+
+                return "#FFCC00";
+              }}
+            />
+            <Controls />
+          </ReactFlow>
         </div>
-        </div>
-        <div>
+        <div style={{overflow: "auto"}}>
           <Sidebar />
         </div>
       </div>
@@ -180,12 +162,3 @@ const ExampleGraph = () => {
 };
 
 export default ExampleGraph;
-
-/*
-        <button type="button" onClick={onSave} style={{ marginLeft: 1 }}>
-          Save graph
-        </button>
-        <button type="button" onClick={onRestore} style={{ marginLeft: 1 }}>
-          Restore graph
-        </button>
-*/
