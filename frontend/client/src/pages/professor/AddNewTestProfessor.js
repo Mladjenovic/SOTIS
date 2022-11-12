@@ -15,53 +15,109 @@ function AddNewTestProfessor() {
   const navigate = useNavigate();
   const subjectId = params.subjectId;
 
-  const [inputFields, setInputFields] = useState([{ name: "", age: "" }]);
-  const handleFormChange = (index, event) => {
-    let data = [...inputFields];
-    data[index][event.target.name] = event.target.value;
-    setInputFields(data);
-  };
-  const addFields = () => {
-    let newfield = { name: "", age: "" };
+  const [sections, setSections] = useState([]);
 
-    setInputFields([...inputFields, newfield]);
-  };
   const submit = (e) => {
     e.preventDefault();
-    console.log(inputFields);
+    console.log(sections);
   };
 
-  const removeFields = (index) => {
-    let data = [...inputFields];
+  const getEmptySection = () => {
+    return {
+      name: "", 
+      questions: [
+        getEmptyQuestion()
+      ]
+    }
+  }
+
+  const getEmptyQuestion = () => {
+    return {
+      text: "", 
+      pointsPerQuestion: 0, 
+      answers: [
+        getEmptyAnswer()
+      ]
+    }
+  }
+
+  const getEmptyAnswer = () => {
+    return {
+      text: "",
+      isCorrect: false
+    }
+  }
+
+  const handleSectionNameChange = (index, event) => {
+    let data = [...sections];
+    data[index][event.target.name] = event.target.value;
+    setSections(data);
+  };
+
+  const addSection = () => {
+    let newSection = getEmptySection();
+    setSections([...sections, newSection]);
+  };
+
+  const removeSection = (index) => {
+    let data = [...sections];
     data.splice(index, 1);
-    setInputFields(data);
+    setSections(data);
+  };
+
+  const handleQuestionNameChange = (sectionIndex, questionIndex, event) => {
+    let data = [...sections];
+    data[sectionIndex].questions[questionIndex][event.target.name] = event.target.value;
+    setSections(data);
+  };
+  
+  const addQuestion = (sectionIndex) => {
+    let newQuestion = getEmptyQuestion();
+    let data = [...sections];
+    data[sectionIndex].questions.push(newQuestion);
+    setSections(data);
+  };
+
+  const removeQuestion = (sectionIndex, questionIndex) => {
+    let data = [...sections];
+    data[sectionIndex].questions.splice(questionIndex, 1);
+    setSections(data);
   };
 
   return (
     <div className="App">
       <form onSubmit={submit}>
-        {inputFields.map((input, index) => {
+        {sections.map((section, sectionIndex) => {
           return (
-            <div key={index}>
+            <div key={sectionIndex}>
+              <button onClick={() => removeSection(sectionIndex)}>Remove Section</button>
               <input
                 name="name"
                 placeholder="Name"
-                value={input.name}
-                onChange={(event) => handleFormChange(index, event)}
+                value={section.name}
+                onChange={(event) => handleSectionNameChange(sectionIndex, event)}
               />
-              <input
-                name="age"
-                placeholder="Age"
-                value={input.age}
-                onChange={(event) => handleFormChange(index, event)}
-              />
-              <button onClick={() => removeFields(index)}>Remove</button>
+              {sections[sectionIndex].questions.map((question, questionIndex) => {
+                  return (
+                    <div key={questionIndex}>
+                      <button onClick={() => removeQuestion(sectionIndex, questionIndex)}>Remove Question</button>
+                      <input
+                        name="text"
+                        placeholder="Text"
+                        value={question.text}
+                        onChange={(event) => handleQuestionNameChange(sectionIndex, questionIndex, event)}
+                      />
+                    </div>
+                    
+                  );
+                })}
+                <button onClick={() => addQuestion(sectionIndex)}>Add Question</button>
             </div>
           );
         })}
+        <button onClick={() => addSection()}>Add Section</button>
       </form>
-      <button onClick={addFields}>Add More..</button>
-      <button onClick={submit}>Submit</button>
+      <button onClick={() => submit()}>Submit</button>
     </div>
   );
 }
