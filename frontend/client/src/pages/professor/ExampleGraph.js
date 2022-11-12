@@ -5,6 +5,7 @@ import ReactFlow, {
   addEdge,
   updateEdge,
   addNode,
+  getConnectedEdges,
   Background,
   Controls,
   MiniMap,
@@ -62,6 +63,7 @@ const ExampleGraph = () => {
   const [edges, setEdges] = useEdgesState([]);
   const [name, setName] = useState("");
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const [shouldDelete, setShouldDelete] = useState(false);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -114,10 +116,6 @@ const ExampleGraph = () => {
     edgeUpdateSuccessful.current = true;
   }, []);
 
-  const deleteNodeById = (id) => {
-    setNodes(nds => nds.filter(node => node.id !== id));
-  };
-
   const onNodesChange = useCallback(
     (changes) => setNodes((ns) => applyNodeChanges(changes, ns)),
     []
@@ -126,6 +124,22 @@ const ExampleGraph = () => {
     (changes) => setEdges((es) => applyEdgeChanges(changes, es)),
     []
   );
+
+  const deleteNodeById = (id) => {
+    setNodes(nds => nds.filter(node => node.id !== id));
+  };
+
+  const deleteEdgeById = (id) => {
+    setEdges(eds => eds.filter(edge => edge.id !== id));
+  };
+
+  const onNodeClick = (event, node) => {
+    if (shouldDelete) {
+      const edgesToRemove = getConnectedEdges([node], edges)
+      edgesToRemove.map((edge) => deleteEdgeById(edge.id));
+      deleteNodeById(node.id);
+    }
+  };
 
   return (
     <Fragment>
@@ -149,6 +163,7 @@ const ExampleGraph = () => {
                 snapGrid={[16, 16]}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
+                onNodeClick={onNodeClick}
                 deleteKeyCode={46}
                 selectionKeyCode={17}
                 //onNodeDragStop={onNodeDragStop}
@@ -159,6 +174,20 @@ const ExampleGraph = () => {
               >
                 <Background color="#888" gap={16} />
                 <Controls />
+                <div style={{ position: 'absolute', left: 10, top: 10, zIndex: 4 }}>
+                  <div>
+                    <label htmlFor="shouldDelete">
+                      delete nodes on click
+                      <input
+                        id="shouldDelete"
+                        type="checkbox"
+                        checked={shouldDelete}
+                        onChange={(event) => setShouldDelete(event.target.checked)}
+                        className="react-flow__ishidden"
+                      />
+                    </label>
+                  </div>
+                </div>
               </ReactFlow>
             </div>
           </ReactFlowProvider>
