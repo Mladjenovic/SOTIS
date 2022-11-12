@@ -1,151 +1,191 @@
-import React, { useEffect, useState, useCallback } from "react";
-import "reactflow/dist/style.css";
+import React, { useState, useCallback, Fragment } from "react";
 
 import ReactFlow, {
-  useNodesState,
-  useEdgesState,
   addEdge,
-  MiniMap,
+  addNode,
+  Background,
   Controls,
-} from "reactflow";
-import "reactflow/dist/style.css";
+  MiniMap,
+  MarkerType,
+  applyNodeChanges, applyEdgeChanges,
+  useNodesState, useEdgesState
+} from "react-flow-renderer";
 
-import ColorSelectorNode from "./ColorSelectorNode";
+import CustomEdge from "../../components/professor/CustomEdge";
+import Sidebar from "../../components/professor/Sidebar";
 
-import "../../index.css";
+import localforage from "localforage";
+import { v4 as uuidv4 } from 'uuid';
 
-const initBgColor = "#1A192B";
+localforage.config({
+  name: "react-flow-docs",
+  storeName: "flows",
+});
 
-const connectionLineStyle = { stroke: "#fff" };
-const snapGrid = [20, 20];
-const nodeTypes = {
-  selectorNode: ColorSelectorNode,
+const flowKey = "example-flow";
+
+const initialNodes = [
+  { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 0 } },
+  { id: '2', data: { label: 'Node 2' }, position: { x: 150, y: 100 } },
+  { id: '3', data: { label: 'Node 2' }, position: { x: 250, y: 100 } },
+];
+
+const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+
+const onLoad = (reactFlowInstance) => {
+  reactFlowInstance.fitView();
 };
 
-function ExampleGraph() {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [bgColor, setBgColor] = useState(initBgColor);
+const edgeTypes = {
+  custom: CustomEdge,
+};
 
-  useEffect(() => {
-    const onChange = (event) => {
-      setNodes((nds) =>
-        nds.map((node) => {
-          if (node.id !== "2") {
-            return node;
-          }
+const ExampleGraph = () => {
+  const [rfInstance, setRfInstance] = useState(null);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [name, setName] = useState("");
 
-          const color = event.target.value;
+  const onPrintElements = () => {
 
-          setBgColor(color);
+    console.log("Nodes: ", nodes);
+    console.log("Edges: ", edges);
+  };
 
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              color,
-            },
-          };
-        })
-      );
+  const addNode = () => {
+    setNodes((e) =>
+    {
+      const node = {
+        id: uuidv4(),
+        data: { label: `${name}` },
+        position: {
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+        },
+      }
+      //setNodes((nds) => nds.concat(node));
+      e.concat(node)
+      //addNode(node, e);
+    });
+    console.log(nodes);
+  };
+
+  /*
+  const onSave = useCallback(() => {
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      localforage.setItem(flowKey, flow);
+      console.log(localforage.getItem(flowKey));
+    }
+  }, [rfInstance]);
+
+  //////////////////////////////////////////////
+  const onRestore = useCallback(() => {
+    const restoreFlow = async () => {
+      const flow = await localforage.getItem(flowKey);
+      console.log(flow);
+
+      if (flow) {
+        const [x = 0, y = 0] = flow.position;
+        setElements(flow.elements || []);
+      }
     };
 
-    setNodes([
-      {
-        id: "1",
-        type: "input",
-        data: { label: "An input node" },
-        position: { x: 0, y: 50 },
-        sourcePosition: "right",
-      },
-      {
-        id: "2",
-        type: "selectorNode",
-        data: { onChange: onChange, color: initBgColor },
-        style: { border: "1px solid #777", padding: 10 },
-        position: { x: 300, y: 50 },
-      },
-      {
-        id: "3",
-        type: "output",
-        data: { label: "Output A" },
-        position: { x: 650, y: 25 },
-        targetPosition: "left",
-      },
-      {
-        id: "4",
-        type: "output",
-        data: { label: "Output B" },
-        position: { x: 650, y: 100 },
-        targetPosition: "left",
-      },
-    ]);
+    restoreFlow();
+  }, [setElements]);
+  //////////////////////////////////////////////
 
-    setEdges([
-      {
-        id: "e1-2",
-        source: "1",
-        target: "2",
-        animated: true,
-        style: { stroke: "#fff" },
-      },
-      {
-        id: "e2a-3",
-        source: "2",
-        target: "3",
-        sourceHandle: "a",
-        animated: true,
-        style: { stroke: "#fff" },
-      },
-      {
-        id: "e2b-4",
-        source: "2",
-        target: "4",
-        sourceHandle: "b",
-        animated: true,
-        style: { stroke: "#fff" },
-      },
-    ]);
-  }, []);
+  
+  //////////////////////////////////////////////
+  // Node position update after draging
+  const onNodeDragStop = (event, node) => {
+    let elementsCopy = elements;
+    let index = elements.findIndex((element) => element.id === node.id);
+    let newPositionNode = elements[index];
+    newPositionNode.position = node.position;
+    elementsCopy.splice(index, 1, newPositionNode);
+    setElements(elementsCopy);
+  };
+  //////////////////////////////////////////////
+  */
+ 
+  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
-  const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) =>
-        addEdge({ ...params, animated: true, style: { stroke: "#fff" } }, eds)
-      ),
-    []
-  );
+  const defaultEdgeOptions = {
+    style: { strokeWidth: 2, stroke: 'black' },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: 'black',
+    },
+  };
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      style={{ background: bgColor, minHeight: "60%", minHeight: "45rem" }}
-      nodeTypes={nodeTypes}
-      connectionLineStyle={connectionLineStyle}
-      snapToGrid={true}
-      snapGrid={snapGrid}
-      defaultZoom={1.5}
-      fitView
-      attributionPosition="bottom-left"
-    >
-      <MiniMap
-        nodeStrokeColor={(n) => {
-          if (n.type === "input") return "#0041d0";
-          if (n.type === "selectorNode") return bgColor;
-          if (n.type === "output") return "#ff0072";
-        }}
-        nodeColor={(n) => {
-          if (n.type === "selectorNode") return bgColor;
-          return "#fff";
-        }}
-      />
-      <Controls />
-    </ReactFlow>
+    <Fragment>
+      <div style={{display: flex, flexDirection: row, flexWrap: wrap}}>
+        <div>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          //onLoad={setRfInstance}
+          style={{ width: "100%", height: "80vh", border: "1px solid #16001E" }}
+          onConnect={onConnect}
+          connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
+          connectionLineType="bezier"
+          defaultEdgeOptions={defaultEdgeOptions}
+          snapToGrid={true}
+          snapGrid={[16, 16]}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          deleteKeyCode={46}
+          selectionKeyCode={17}
+          //onNodeDragStop={onNodeDragStop}
+          edgeTypes={edgeTypes}
+        >
+          <Background color="#888" gap={16} />
+          <MiniMap
+            style={{ border: "1px solid #16001E" }}
+            nodeColor={(n) => {
+              if (n.type === "input") return "blue";
+
+              return "#FFCC00";
+            }}
+          />
+          <Controls />
+        </ReactFlow>
+        <div>
+          <input
+            type="text"
+            onChange={(e) => setName(e.target.value)}
+            name="title"
+          />
+          <button type="button" onClick={addNode}>
+            Add Node
+          </button>
+          
+          <button
+            type="button"
+            onClick={onPrintElements}
+            style={{ marginLeft: 1 }}
+          >
+            print elements
+          </button>
+        </div>
+        </div>
+        <div>
+          <Sidebar />
+        </div>
+      </div>
+    </Fragment>
   );
-}
+};
 
 export default ExampleGraph;
+
+/*
+        <button type="button" onClick={onSave} style={{ marginLeft: 1 }}>
+          Save graph
+        </button>
+        <button type="button" onClick={onRestore} style={{ marginLeft: 1 }}>
+          Restore graph
+        </button>
+*/

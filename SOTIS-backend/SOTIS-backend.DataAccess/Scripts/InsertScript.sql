@@ -20,3 +20,9 @@ INSERT INTO [dbo].[Questions] ([Id], [Text], [PointsPerQuestion], [SectionId]) V
 INSERT INTO [dbo].[ProfessorAnswers] ([Id], [Text], [IsCorrect], [QuestionId]) VALUES (N'8e20fae2-eba5-4784-b394-750f2bd19599', N'answer', 1, N'65439f68-dfd9-4420-95ad-5cbd56117a81')
 INSERT INTO [dbo].[ProfessorAnswers] ([Id], [Text], [IsCorrect], [QuestionId]) VALUES (N'b230fc1e-0c2c-4f9a-8de3-4577c1225f57', N'answer1', 0, N'65439f68-dfd9-4420-95ad-5cbd56117a81')
 
+INSERT INTO [dbo].[Problems] ([Id], [Name], [SubjectId]) VALUES (N'1787d9df-a159-4730-9a9e-2fa7876cf126', N'P1', 0, N'6ac52c71-86fe-4c39-beb9-b7408804f2f3')
+INSERT INTO [dbo].[Problems] ([Id], [Name], [SubjectId]) VALUES (N'1787d9df-a159-4730-9a9e-2fa7876cf127', N'P1', 0, N'6ac52c71-86fe-4c39-beb9-b7408804f2f3')
+INSERT INTO [dbo].[Problems] ([Id], [Name], [SubjectId]) VALUES (N'1787d9df-a159-4730-9a9e-2fa7876cf128', N'P1', 0, N'6ac52c71-86fe-4c39-beb9-b7408804f2f3')
+INSERT INTO [dbo].[Problems] ([Id], [Name], [SubjectId]) VALUES (N'1787d9df-a159-4730-9a9e-2fa7876cf129', N'P1', 0, N'6ac52c71-86fe-4c39-beb9-b7408804f2f3')
+INSERT INTO [dbo].[Problems] ([Id], [Name], [SubjectId]) VALUES (N'1787d9df-a159-4730-9a9e-2fa7876cf130', N'P1', 0, N'6ac52c71-86fe-4c39-beb9-b7408804f2f3')
+INSERT INTO [dbo].[Problems] ([Id], [Name], [SubjectId]) VALUES (N'1787d9df-a159-4730-9a9e-2fa7876cf131', N'P1', 0, N'6ac52c71-86fe-4c39-beb9-b7408804f2f3')
