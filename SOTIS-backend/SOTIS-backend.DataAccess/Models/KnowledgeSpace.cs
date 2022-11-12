@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SOTIS_backend.DataAccess.Models
 {
-    [Table("Problems")]
-    public class Problem : IEntityBase
+    [Table("KnowledgeSpaces")]
+    public class KnowledgeSpace : IEntityBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,8 +18,6 @@ namespace SOTIS_backend.DataAccess.Models
 
         public Subject Subject { get; set; }
 
-        public IEnumerable<Surmise> SourceSurmises { get; set; }
-
-        public IEnumerable<Surmise> DestinationSurmises { get; set; }
+        public IEnumerable<Surmise> Surmises { get; set; }
     }
 }

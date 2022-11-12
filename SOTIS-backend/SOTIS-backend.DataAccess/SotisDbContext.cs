@@ -46,6 +46,16 @@ namespace SOTIS_backend.DataAccess
                 .WithOne(b => b.Question)
                 .HasForeignKey(p => p.QuestionId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Surmise>()
+                    .HasOne(m => m.SourceProblem)
+                    .WithMany(t => t.SourceSurmises)
+                    .HasForeignKey(m => m.SourceProblemId);
+
+            modelBuilder.Entity<Surmise>()
+                        .HasOne(m => m.DestinationProblem)
+                        .WithMany(t => t.DestinationSurmises)
+                        .HasForeignKey(m => m.DestinationProblemId);
         }
     }
 }

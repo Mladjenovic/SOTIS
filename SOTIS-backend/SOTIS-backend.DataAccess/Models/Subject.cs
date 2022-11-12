@@ -25,5 +25,7 @@ namespace SOTIS_backend.DataAccess.Models
         public IEnumerable<SubjectParticipant> Students { get; set; }
 
         public IEnumerable<Problem> Problems { get; set; }
+
+        public IEnumerable<KnowledgeSpace> KnowledgeSpaces { get; set; }
     }
 }
