@@ -12,4 +12,5 @@ export const addNewStudentRoute = `${host}/api/Subjects/student`;
 
 export const getAllTestForSubjectRoute = `${host}/api/Tests/professor`;
 
-export const getAllProblemsRoute = `${host}/api/Problems`
+export const getAllProblemsRoute = `${host}/api/Problems`;
+export const createNewProblemRoute = `${host}/api/Problems`;

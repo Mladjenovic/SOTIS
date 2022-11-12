@@ -1,49 +1,72 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Table } from "antd";
 import { getAllSubjectsRoute } from "../../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
 import loader from "../../assets/loader.gif";
 
+import { Button, Table, Modal, Input } from "antd";
+
 function AllSubjectsProfessor() {
-  const [subjects, setSubjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  const [dataSource, setDataSource] = useState([]);
   const columns = [
     {
-      title: "Id",
+      key: "1",
+      title: "ID",
       dataIndex: "id",
-      key: "id",
-      // render: (text) => <a>{text}</a>,
     },
     {
+      key: "2",
       title: "Title",
       dataIndex: "title",
-      key: "title",
-      // render: (text) => <a>{text}</a>,
     },
     {
+      key: "3",
       title: "Description",
       dataIndex: "description",
-      key: "description",
     },
     {
+      key: "4",
       title: "MinimumPoints",
       dataIndex: "minimumPoints",
-      key: "minimumPoints",
     },
     {
-      title: "tests",
-      dataIndex: "tests",
-      key: "tests",
-      render: (text) => <button className="button">all tests</button>,
+      key: "5",
+      title: "All tests",
+      render: (record) => {
+        return (
+          <>
+            <button
+              onClick={() => {
+                handleTestsClick(record);
+              }}
+            >
+              tests
+            </button>
+          </>
+        );
+      },
+    },
+    {
+      key: "6",
+      title: "Add problem",
+      render: (record) => {
+        return (
+          <>
+            <button
+              onClick={() => {
+                handleAddProblemClick(record);
+              }}
+            >
+              problems
+            </button>
+          </>
+        );
+      },
     },
   ];
-
-  const handleTestsClick = (subjectId) => {
-    navigate(`/professor/subject/tests/${subjectId}`);
-  };
 
   useEffect(() => {
     axios
@@ -55,14 +78,20 @@ function AllSubjectsProfessor() {
         },
       })
       .then((res) => {
-        console.log(res.data);
-        setSubjects(res.data);
+        setDataSource(res.data);
         setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+
+  const handleTestsClick = (record) => {
+    navigate(`/professor/subject/tests/${record.id}`);
+  };
+  const handleAddProblemClick = (record) => {
+    navigate(`/professor/subject/problems/${record.id}`);
+  };
 
   return (
     <>
@@ -82,22 +111,7 @@ function AllSubjectsProfessor() {
         />
       ) : (
         <div style={{ color: "black" }}>
-          <Table
-            dataSource={subjects}
-            columns={columns}
-            rowKey="id"
-            onRow={(record, rowIndex) => {
-              return {
-                onClick: (event) => {
-                  handleTestsClick(record.id);
-                }, // click row
-                onDoubleClick: (event) => {}, // double click row
-                onContextMenu: (event) => {}, // right button click row
-                onMouseEnter: (event) => {}, // mouse enter row
-                onMouseLeave: (event) => {}, // mouse leave row
-              };
-            }}
-          />
+          <Table dataSource={dataSource} columns={columns} />
         </div>
       )}
     </>
