@@ -2,8 +2,7 @@
 
 namespace SOTIS_backend.DataAccess.Interfaces
 {
-    public interface ISubjectRepository : IEntityBaseRepository<Subject>
+    public interface IKnowledgeSpacesRepository : IEntityBaseRepository<KnowledgeSpace>
     {
-
     }
 }

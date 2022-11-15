@@ -25,6 +25,9 @@ namespace SOTIS_backend.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("KnowledgeSpaceType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -36,6 +39,33 @@ namespace SOTIS_backend.DataAccess.Migrations
                     b.HasIndex("SubjectId");
 
                     b.ToTable("KnowledgeSpaces");
+                });
+
+            modelBuilder.Entity("SOTIS_backend.DataAccess.Models.NodeDetails", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CoordinateX")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CoordinateY")
+                        .HasColumnType("int");
+
+                    b.Property<string>("KnowledgeSpaceId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProblemId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KnowledgeSpaceId");
+
+                    b.HasIndex("ProblemId");
+
+                    b.ToTable("NodeDetails");
                 });
 
             modelBuilder.Entity("SOTIS_backend.DataAccess.Models.Problem", b =>
@@ -281,6 +311,21 @@ namespace SOTIS_backend.DataAccess.Migrations
                     b.Navigation("Subject");
                 });
 
+            modelBuilder.Entity("SOTIS_backend.DataAccess.Models.NodeDetails", b =>
+                {
+                    b.HasOne("SOTIS_backend.DataAccess.Models.KnowledgeSpace", "KnowledgeSpace")
+                        .WithMany("NodeDetails")
+                        .HasForeignKey("KnowledgeSpaceId");
+
+                    b.HasOne("SOTIS_backend.DataAccess.Models.Problem", "Problem")
+                        .WithMany()
+                        .HasForeignKey("ProblemId");
+
+                    b.Navigation("KnowledgeSpace");
+
+                    b.Navigation("Problem");
+                });
+
             modelBuilder.Entity("SOTIS_backend.DataAccess.Models.Problem", b =>
                 {
                     b.HasOne("SOTIS_backend.DataAccess.Models.Subject", "Subject")
@@ -392,6 +437,8 @@ namespace SOTIS_backend.DataAccess.Migrations
 
             modelBuilder.Entity("SOTIS_backend.DataAccess.Models.KnowledgeSpace", b =>
                 {
+                    b.Navigation("NodeDetails");
+
                     b.Navigation("Surmises");
                 });
 

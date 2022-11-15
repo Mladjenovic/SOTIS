@@ -8,6 +8,7 @@ using SOTIS_backend.Controllers.Helpers;
 using SOTIS_backend.DataAccess.Interfaces;
 using SOTIS_backend.DataAccess.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SOTIS_backend.Controllers
 {
@@ -46,11 +47,17 @@ namespace SOTIS_backend.Controllers
         [AuthorizationFilter(Role.Professor)]
         public IActionResult Delete([FromRoute] string problemId)
         {
-            var problem = _problemRepository.GetSingle(problemId);
+            var problem = _problemRepository.FindByIncluding(x => x.Id == problemId, x => x.DestinationSurmises, x => x.SourceSurmises).FirstOrDefault();
             if (problem == null)
             {
                 return BadRequest($"Problem with id {problemId} does not exist");
             }
+
+            if (problem.SourceSurmises.Any() || problem.DestinationSurmises.Any())
+            {
+                return BadRequest("Cannot delete problem because it is already in use for some knowledge space");
+            }
+            // todo: prevent delete if some question is connected to this problem
 
             _problemRepository.Delete(problem);
             _problemRepository.Commit();

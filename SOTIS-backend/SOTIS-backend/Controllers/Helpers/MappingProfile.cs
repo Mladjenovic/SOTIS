@@ -32,8 +32,13 @@ namespace SOTIS_backend.Controllers.Helpers
             CreateMap<Question, QuestionDto>().ReverseMap();
             CreateMap<ProfessorAnswer, ProfessorAnswerBaseDto>().ReverseMap();
             CreateMap<ProfessorAnswer, ProfessorAnswerDto>().ReverseMap();
+            
             CreateMap<Problem, ProblemDto>().ReverseMap();
             CreateMap<Problem, ProblemCreateDto>().ReverseMap();
+            CreateMap<PositionDto, NodeDetails>()
+                .ForMember(dst => dst.CoordinateX, map => map.MapFrom(dst => dst.X))
+                .ForMember(dst => dst.CoordinateY, map => map.MapFrom(dst => dst.Y))
+                .ReverseMap();
         }
     }
 }

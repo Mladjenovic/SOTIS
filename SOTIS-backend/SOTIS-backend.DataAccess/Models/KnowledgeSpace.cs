@@ -1,4 +1,5 @@
-﻿using SOTIS_backend.DataAccess.Interfaces;
+﻿using SOTIS_backend.Common.Enums;
+using SOTIS_backend.DataAccess.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,10 +15,14 @@ namespace SOTIS_backend.DataAccess.Models
 
         public string Name { get; set; }
 
+        public KnowledgeSpaceType KnowledgeSpaceType { get; set; }
+
         public string SubjectId { get; set; }
 
         public Subject Subject { get; set; }
 
         public IEnumerable<Surmise> Surmises { get; set; }
+
+        public IEnumerable<NodeDetails> NodeDetails { get; set; }
     }
 }

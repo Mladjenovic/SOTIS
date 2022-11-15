@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SOTIS_backend.DataAccess.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,6 +40,45 @@ namespace SOTIS_backend.DataAccess.Migrations
                         name: "FK_Subjects_Users_ProfessorId",
                         column: x => x.ProfessorId,
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KnowledgeSpaces",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    KnowledgeSpaceType = table.Column<int>(type: "int", nullable: false),
+                    SubjectId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KnowledgeSpaces", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KnowledgeSpaces_Subjects_SubjectId",
+                        column: x => x.SubjectId,
+                        principalTable: "Subjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Problems",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubjectId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Problems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Problems_Subjects_SubjectId",
+                        column: x => x.SubjectId,
+                        principalTable: "Subjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -90,6 +130,65 @@ namespace SOTIS_backend.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NodeDetails",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CoordinateX = table.Column<int>(type: "int", nullable: false),
+                    CoordinateY = table.Column<int>(type: "int", nullable: false),
+                    ProblemId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    KnowledgeSpaceId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NodeDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NodeDetails_KnowledgeSpaces_KnowledgeSpaceId",
+                        column: x => x.KnowledgeSpaceId,
+                        principalTable: "KnowledgeSpaces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_NodeDetails_Problems_ProblemId",
+                        column: x => x.ProblemId,
+                        principalTable: "Problems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Surmises",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    KnowledgeSpaceId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SourceProblemId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DestinationProblemId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Surmises", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Surmises_KnowledgeSpaces_KnowledgeSpaceId",
+                        column: x => x.KnowledgeSpaceId,
+                        principalTable: "KnowledgeSpaces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Surmises_Problems_DestinationProblemId",
+                        column: x => x.DestinationProblemId,
+                        principalTable: "Problems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Surmises_Problems_SourceProblemId",
+                        column: x => x.SourceProblemId,
+                        principalTable: "Problems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sections",
                 columns: table => new
                 {
@@ -106,6 +205,33 @@ namespace SOTIS_backend.DataAccess.Migrations
                         principalTable: "Tests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TestResults",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TestId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    StudentId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Points = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestResults", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TestResults_Tests_TestId",
+                        column: x => x.TestId,
+                        principalTable: "Tests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TestResults_Users_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -149,6 +275,26 @@ namespace SOTIS_backend.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_KnowledgeSpaces_SubjectId",
+                table: "KnowledgeSpaces",
+                column: "SubjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NodeDetails_KnowledgeSpaceId",
+                table: "NodeDetails",
+                column: "KnowledgeSpaceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NodeDetails_ProblemId",
+                table: "NodeDetails",
+                column: "ProblemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Problems_SubjectId",
+                table: "Problems",
+                column: "SubjectId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProfessorAnswers_QuestionId",
                 table: "ProfessorAnswers",
                 column: "QuestionId");
@@ -179,6 +325,31 @@ namespace SOTIS_backend.DataAccess.Migrations
                 column: "ProfessorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Surmises_DestinationProblemId",
+                table: "Surmises",
+                column: "DestinationProblemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Surmises_KnowledgeSpaceId",
+                table: "Surmises",
+                column: "KnowledgeSpaceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Surmises_SourceProblemId",
+                table: "Surmises",
+                column: "SourceProblemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestResults_StudentId",
+                table: "TestResults",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestResults_TestId",
+                table: "TestResults",
+                column: "TestId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tests_SubjectId",
                 table: "Tests",
                 column: "SubjectId");
@@ -187,13 +358,28 @@ namespace SOTIS_backend.DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "NodeDetails");
+
+            migrationBuilder.DropTable(
                 name: "ProfessorAnswers");
 
             migrationBuilder.DropTable(
                 name: "SubjectParticipant");
 
             migrationBuilder.DropTable(
+                name: "Surmises");
+
+            migrationBuilder.DropTable(
+                name: "TestResults");
+
+            migrationBuilder.DropTable(
                 name: "Questions");
+
+            migrationBuilder.DropTable(
+                name: "KnowledgeSpaces");
+
+            migrationBuilder.DropTable(
+                name: "Problems");
 
             migrationBuilder.DropTable(
                 name: "Sections");
