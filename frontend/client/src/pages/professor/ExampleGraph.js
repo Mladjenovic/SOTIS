@@ -1,5 +1,7 @@
-import React, { useState, useRef, useCallback, Fragment } from "react";
-
+import React, { useEffect, useState, useRef, useCallback, Fragment } from "react";
+import { Button } from "antd";
+import axios from "axios";
+import { getKnowledgeSpaceRoute, createKnowledgeSpaceRoute } from "../../utils/APIRoutes";
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
@@ -68,6 +70,50 @@ const ExampleGraph = () => {
   const [name, setName] = useState("");
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [shouldDelete, setShouldDelete] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get(`${getKnowledgeSpaceRoute}/${params.subjectId}`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(
+            JSON.stringify(localStorage.getItem("access-token"))
+          )}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setNodes(res.data.nodes);
+        setEdges(res.data.edges);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(error.message, toastOptions);
+      });
+  }, []);
+
+  const saveGraph = () => {
+    axios
+      .put(
+      getKnowledgeSpaceRoute, 
+      {
+        subjectId: params.subjectId,
+        nodes: nodes,
+        edges: edges
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(
+            JSON.stringify(localStorage.getItem("access-token"))
+          )}`,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -209,6 +255,9 @@ const ExampleGraph = () => {
         </div>
         <div style={{ overflow: "auto", marginLeft: "1rem" }}>
           <Sidebar subjectId={params.subjectId} />
+          <Button onClick={saveGraph} style={{ borderRadius: "1rem" }}>
+            Save
+          </Button>
         </div>
       </div>
     </Fragment>

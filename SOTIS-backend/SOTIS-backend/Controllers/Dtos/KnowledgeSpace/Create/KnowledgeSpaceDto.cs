@@ -8,8 +8,8 @@ namespace SOTIS_backend.Controllers.Dtos
 
         public string SubjectId { get; set; }
 
-        public IEnumerable<NodeDto> Nodes { get; set; }
+        public List<NodeDto> Nodes { get; set; } = new();
 
-        public IEnumerable<EdgeDto> Edges { get; set; }
+        public List<EdgeDto> Edges { get; set; } = new();
     }
 }

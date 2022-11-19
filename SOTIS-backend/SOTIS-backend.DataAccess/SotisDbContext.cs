@@ -56,6 +56,18 @@ namespace SOTIS_backend.DataAccess
                         .HasOne(m => m.DestinationProblem)
                         .WithMany(t => t.DestinationSurmises)
                         .HasForeignKey(m => m.DestinationProblemId);
+
+            modelBuilder.Entity<KnowledgeSpace>()
+                .HasMany(p => p.Surmises)
+                .WithOne(b => b.KnowledgeSpace)
+                .HasForeignKey(p => p.KnowledgeSpaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<KnowledgeSpace>()
+                .HasMany(p => p.NodeDetails)
+                .WithOne(b => b.KnowledgeSpace)
+                .HasForeignKey(p => p.KnowledgeSpaceId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

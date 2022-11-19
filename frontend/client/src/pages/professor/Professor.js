@@ -24,10 +24,6 @@ function Professor() {
             <OrderedListOutlined />
             <Link to="/professor">&nbsp;All subjects</Link>
           </Button>
-          <Button type="primary" ghost style={{ border: "none" }}>
-            <NodeIndexOutlined />
-            <Link to="/professor/exampleGraph">&nbsp;ExampleGraph</Link>
-          </Button>
         </Row>
       </Sider>
       <Layout

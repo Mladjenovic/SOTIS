@@ -33,7 +33,7 @@ namespace SOTIS_backend.Controllers
             _knowledgeSpacesRepository = knowledgeSpacesRepository;
         }
 
-        [HttpPost]
+        [HttpPut]
         [AuthorizationFilter(Role.Professor)]
         public IActionResult CreateKnowledgeSpace([FromBody] KnowledgeSpaceDto knowledgeSpaceDto)
         {
@@ -41,11 +41,6 @@ namespace SOTIS_backend.Controllers
             if (subject == null)
             {
                 return BadRequest("Subject does not exist for given id");
-            }
-
-            if (subject.KnowledgeSpaces.Any(x => x.KnowledgeSpaceType == KnowledgeSpaceType.Expected))
-            {
-                return BadRequest("There is already expected knowledge space for given subject");
             }
 
             var nodeIdToProblemIdDict = new Dictionary<string, string>();
@@ -63,6 +58,7 @@ namespace SOTIS_backend.Controllers
                 problems.Add(problem);
                 var nodeDetail = Mapper.Map<NodeDetails>(node.Position);
                 nodeDetail.ProblemId = problem.Id;
+                nodeDetails.Add(nodeDetail);
             }
 
             var surmises = new List<Surmise>();
@@ -83,10 +79,17 @@ namespace SOTIS_backend.Controllers
                 KnowledgeSpaceType = KnowledgeSpaceType.Expected
             };
 
+            var expectedKnowledgeSpace = subject.KnowledgeSpaces.FirstOrDefault(x => x.KnowledgeSpaceType == KnowledgeSpaceType.Expected);
+            if (expectedKnowledgeSpace != null)
+            {
+                _knowledgeSpacesRepository.Delete(expectedKnowledgeSpace);
+                _knowledgeSpacesRepository.Commit();
+            }
+
             _knowledgeSpacesRepository.Add(knowledgeSpace);
             _knowledgeSpacesRepository.Commit();
 
-            return Ok(201);
+            return Ok();
         }
 
         [HttpGet("{subjectId}")]
@@ -102,14 +105,42 @@ namespace SOTIS_backend.Controllers
             var knowledgeSpace = subject.KnowledgeSpaces.FirstOrDefault(x => x.KnowledgeSpaceType == KnowledgeSpaceType.Expected);
             if (knowledgeSpace == null)
             {
-                return NoContent();
+                return Ok(new KnowledgeSpaceDto());
+            }
+
+            knowledgeSpace = _knowledgeSpacesRepository.GetSingle(x => x.Id == knowledgeSpace.Id, x => x.Surmises, x => x.NodeDetails); // retrieve dependent entities
+            var nodes = new List<NodeDto>();
+            foreach (var nodeDetail in knowledgeSpace.NodeDetails)
+            {
+                var problem = _problemRepository.GetSingle(nodeDetail.ProblemId);
+                nodes.Add(new NodeDto
+                {
+                    Id = nodeDetail.ProblemId,
+                    Data = new DataDto
+                    {
+                        Label = problem.Name
+                    },
+                    Position = new PositionDto
+                    {
+                        X = nodeDetail.CoordinateX,
+                        Y = nodeDetail.CoordinateY
+                    }
+                });
             }
 
             var response = new KnowledgeSpaceDto
             {
-                //SubjectId = subject,
-                //Nodes = 
+                SubjectId = knowledgeSpace.SubjectId,
+                Nodes = nodes,
+                Edges = knowledgeSpace.Surmises.Select(x => 
+                    new EdgeDto 
+                    { 
+                        Id = x.Id, 
+                        Source = x.SourceProblemId, 
+                        Target = x.DestinationProblemId 
+                    }).ToList()
             };
+
             return Ok(response);
         }
     }
