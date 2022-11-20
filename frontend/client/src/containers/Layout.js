@@ -35,6 +35,10 @@ import AllTestsForSubjectProfessor from "../pages/professor/AllTestsForSubjectPr
 import AddNewTestProfessor from "../pages/professor/AddNewTestProfessor";
 import AddNewProblemProfessor from "../pages/professor/AddNewProblemProfessor";
 import ProblemsForSubjectProfessor from "../pages/professor/ProblemsForSubjectProfessor";
+import Student from "../pages/student/Student";
+import AllSubjectsStudent from "../pages/student/AllSubjectsStudent";
+import AllTestsForSubjectStudent from "../pages/student/AllTestsForSubjectStudent";
+import StudentTakeTest from "../pages/student/StudentTakeTest";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -106,6 +110,13 @@ function CustomLayout() {
             <>
               <Menu.Item key="6" icon={<BookOutlined />}>
                 <Link to="/professor">Subjects</Link>
+              </Menu.Item>
+            </>
+          )}
+          {currentUser && currentUser.Role === 2 && (
+            <>
+              <Menu.Item key="6" icon={<BookOutlined />}>
+                <Link to="/student">My Subjects</Link>
               </Menu.Item>
             </>
           )}
@@ -186,6 +197,20 @@ function CustomLayout() {
                   element={<ExampleGraph />}
                 />
                 <Route path="*" element={<AllSubjectsAdmin />} />
+              </Route>
+
+              {/* Student routes */}
+              <Route exact path="/student" element={<Student />}>
+                <Route path="/student" element={<AllSubjectsStudent />} />
+                <Route
+                  path="/student/subject/tests/:subjectId"
+                  element={<AllTestsForSubjectStudent />}
+                />
+                <Route
+                  path="/student/take/test/:testId"
+                  element={<StudentTakeTest />}
+                />
+                <Route path="*" element={<AllSubjectsStudent />} />
               </Route>
             </Routes>
           </div>

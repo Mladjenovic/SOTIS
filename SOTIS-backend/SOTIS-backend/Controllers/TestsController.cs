@@ -43,8 +43,22 @@ namespace SOTIS_backend.Controllers
             return Ok(result);
         }
 
+        [HttpGet("student/{subjectId}")]
+        [AuthorizationFilter(Role.Student)]
+        public IActionResult GetAllStudent([FromRoute] string subjectId)
+        {
+            if (_subjectRepository.GetSingle(subjectId) == null)
+            {
+                return BadRequest("Subject does not exist for given id");
+            }
+
+            var tests = _testRepository.FindBy(x => x.SubjectId == subjectId);
+            var result = Mapper.Map<IEnumerable<TestBaseDto>>(tests);
+            return Ok(result);
+        }
+
         [HttpGet("{testId}")]
-        [AuthorizationFilter(Role.Professor)]
+        [AuthorizationFilter(Role.Professor, Role.Student)]
         public IActionResult GetAll([FromRoute] string testId)
         {
             var test = _testRepository.GetSingleThenInclude(testId);

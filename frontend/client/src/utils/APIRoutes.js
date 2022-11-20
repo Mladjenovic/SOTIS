@@ -11,6 +11,8 @@ export const availableStudentsRoute = `${host}/api/Subjects`;
 export const addNewStudentRoute = `${host}/api/Subjects/student`;
 
 export const getAllTestForSubjectRoute = `${host}/api/Tests/professor`;
+export const getAllTestForSubjectStudentRoute = `${host}/api/Tests/student`;
+export const getTestStudentRoute = `${host}/api/Tests`;
 
 export const getAllProblemsRoute = `${host}/api/Problems`;
 export const createNewProblemRoute = `${host}/api/Problems`;
@@ -19,3 +21,5 @@ export const createTestRoute = `${host}/api/Tests`;
 
 export const getKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace`;
 export const createKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace`;
+
+export const getAllSubjectsForStudentRoute = `${host}/api/Subjects/student`;
