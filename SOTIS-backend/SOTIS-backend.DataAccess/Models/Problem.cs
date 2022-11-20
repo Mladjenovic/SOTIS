@@ -21,5 +21,7 @@ namespace SOTIS_backend.DataAccess.Models
         public IEnumerable<Surmise> SourceSurmises { get; set; }
 
         public IEnumerable<Surmise> DestinationSurmises { get; set; }
+
+        public IEnumerable<Question> Questions { get; set; }
     }
 }
