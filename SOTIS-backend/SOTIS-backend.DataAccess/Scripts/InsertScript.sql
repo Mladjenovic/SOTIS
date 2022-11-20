@@ -15,7 +15,7 @@ INSERT INTO [dbo].[Tests] ([Id], [Title], [Description], [MinimumPoints], [Subje
 
 INSERT INTO [dbo].[Sections] ([Id], [Name], [TestId]) VALUES (N'37877d91-c83f-49d3-a7fc-37d33c31d42c', N'section', N'3d5ef0cd-f28d-4e0c-b5ac-0ffc2cf46563')
 
-INSERT INTO [dbo].[Questions] ([Id], [Text], [PointsPerQuestion], [SectionId]) VALUES (N'65439f68-dfd9-4420-95ad-5cbd56117a81', N'question', 2, N'37877d91-c83f-49d3-a7fc-37d33c31d42c')
+INSERT INTO [dbo].[Questions] ([Id], [Text], [PointsPerQuestion], [SectionId], [ProblemId]) VALUES (N'65439f68-dfd9-4420-95ad-5cbd56117a81', N'question', 2, N'37877d91-c83f-49d3-a7fc-37d33c31d42c', N'1787d9df-a159-4730-9a9e-2fa7876cf126')
 
 INSERT INTO [dbo].[ProfessorAnswers] ([Id], [Text], [IsCorrect], [QuestionId]) VALUES (N'8e20fae2-eba5-4784-b394-750f2bd19599', N'answer', 1, N'65439f68-dfd9-4420-95ad-5cbd56117a81')
 INSERT INTO [dbo].[ProfessorAnswers] ([Id], [Text], [IsCorrect], [QuestionId]) VALUES (N'b230fc1e-0c2c-4f9a-8de3-4577c1225f57', N'answer1', 0, N'65439f68-dfd9-4420-95ad-5cbd56117a81')

@@ -5,5 +5,7 @@
         public string Text { get; set; }
 
         public double PointsPerQuestion { get; set; }
+
+        public string ProblemId { get; set; }
     }
 }

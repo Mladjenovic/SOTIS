@@ -18,15 +18,19 @@ namespace SOTIS_backend.Controllers
 
         private readonly ISubjectRepository _subjectRepository;
 
+        private readonly IProblemRepository _problemRepository;
+
         public TestsController(
             IOptions<AppSettings> appSettings,
             IMapper mapper,
             ITestRepository testRepository,
-            ISubjectRepository subjectRepository)
+            ISubjectRepository subjectRepository,
+            IProblemRepository problemRepository)
             : base(appSettings, mapper)
         {
             _testRepository = testRepository;
             _subjectRepository = subjectRepository;
+            _problemRepository = problemRepository;
         }
 
         [HttpGet("professor/{subjectId}")]
@@ -67,6 +71,20 @@ namespace SOTIS_backend.Controllers
                 return BadRequest("Test with same title already exists");
             }
 
+            var problemIds = testCreateDto.Sections.SelectMany(x => x.Questions).Select(x => x.ProblemId);
+            if (problemIds.Any(x => x == null))
+            {
+                return BadRequest("Every question must be connected with one problem");
+            }
+
+            foreach (var problemId in problemIds)
+            {
+                if (_problemRepository.GetSingle(problemId) == null)
+                {
+                    return BadRequest($"Problem with id {problemId} does not exist");
+                }
+            }
+
             var test = Mapper.Map<Test>(testCreateDto);
             var testDb = _testRepository.Add(test);
             _testRepository.Commit();
@@ -90,6 +108,20 @@ namespace SOTIS_backend.Controllers
             if (_testRepository.FindBy(x => x.Title == testDto.Title).Any(x => x.Id != testDto.Id))
             {
                 return BadRequest("Test with same title already exists");
+            }
+
+            var problemIds = testDto.Sections.SelectMany(x => x.Questions).Select(x => x.ProblemId);
+            if (problemIds.Any(x => x == null))
+            {
+                return BadRequest("Every question must be connected with one problem");
+            }
+
+            foreach (var problemId in problemIds)
+            {
+                if (_problemRepository.GetSingle(problemId) == null)
+                {
+                    return BadRequest($"Problem with id {problemId} does not exist");
+                }
             }
 
             _testRepository.Delete(testDb);

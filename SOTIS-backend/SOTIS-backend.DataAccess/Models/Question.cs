@@ -18,8 +18,12 @@ namespace SOTIS_backend.DataAccess.Models
 
         public double PointsPerQuestion { get; set; }
 
+        public string SectionId { get; set; }
+
         public Section Section { get; set; }
 
-        public string SectionId { get; set; }
+        public string ProblemId { get; set; }
+
+        public Problem Problem { get; set; }
     }
 }
