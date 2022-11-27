@@ -98,7 +98,7 @@ function AllTestsForSubjectStudent() {
         />
       ) : (
         <div style={{ color: "black" }}>
-          <Table dataSource={dataSource} columns={columns} />
+          <Table dataSource={dataSource} columns={columns} rowKey="id" />
         </div>
       )}
     </>

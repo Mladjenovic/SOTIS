@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 const { Option } = Select;
 
-import { createTestRoute } from "../../utils/APIRoutes";
+import { createTestRoute, getAllProblemsRoute } from "../../utils/APIRoutes";
 import { useNavigate, useParams } from "react-router-dom";
 
 function AddNewTestProfessor() {
@@ -23,12 +23,14 @@ function AddNewTestProfessor() {
   const [testTitle, setTestTitle] = useState("");
   const [testDescription, setTestDescription] = useState("");
   const [testMinimumPoints, setTestMinimumPoints] = useState(0);
+  const [problemsList, setProblemsList] = useState([]);
   const [sections, setSections] = useState([]);
 
   const submit = (e) => {
     e.preventDefault();
 
     if (isFormValid()) {
+      console.log(sections);
       axios
         .post(
           createTestRoute,
@@ -62,6 +64,24 @@ function AddNewTestProfessor() {
         });
     }
   };
+
+  useEffect(() => {
+    axios
+      .get(getAllProblemsRoute + `/${params.subjectId}`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(
+            JSON.stringify(localStorage.getItem("access-token"))
+          )}`,
+        },
+      })
+      .then((res) => {
+        setProblemsList(res.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(error.message, toastOptions);
+      });
+  }, []);
 
   function isFormValid() {
     var retFlag = true;
@@ -103,7 +123,12 @@ function AddNewTestProfessor() {
           retFlag = false;
           return;
         }
-        question.answers.forEach((answer) => {
+        if (question.problemId === "") {
+          toast.info("You need to select a problemID");
+          retFlag = false;
+          return;
+        }
+        question.professorAnswers.forEach((answer) => {
           if (answer.text === "") {
             toast.info("Please input answer text");
             retFlag = false;
@@ -126,7 +151,8 @@ function AddNewTestProfessor() {
     return {
       text: "",
       pointsPerQuestion: 0,
-      answers: [getEmptyAnswer()],
+      problemId: "",
+      professorAnswers: [getEmptyAnswer()],
     };
   };
 
@@ -160,6 +186,7 @@ function AddNewTestProfessor() {
       event.target.value;
     setSections(data);
   };
+
   const handleAnswerTextChange = (
     sectionIndex,
     questionIndex,
@@ -167,11 +194,12 @@ function AddNewTestProfessor() {
     event
   ) => {
     let data = [...sections];
-    data[sectionIndex].questions[questionIndex].answers[answerIndex][
+    data[sectionIndex].questions[questionIndex].professorAnswers[answerIndex][
       event.target.name
     ] = event.target.value;
     setSections(data);
   };
+
   const handleAnswerIsCorrectChange = (
     sectionIndex,
     questionIndex,
@@ -179,12 +207,15 @@ function AddNewTestProfessor() {
     event
   ) => {
     let data = [...sections];
-    data[sectionIndex].questions[questionIndex].answers[answerIndex][
+    data[sectionIndex].questions[questionIndex].professorAnswers[answerIndex][
       event.target.name
-    ] = document.querySelector(`.answer_${answerIndex}`).checked;
+    ] = document.querySelector(
+      `.answer_${questionIndex}_${answerIndex}`
+    ).checked;
 
     setSections(data);
   };
+
   const handleQuestionPointsPerQuestionChange = (
     sectionIndex,
     questionIndex,
@@ -193,6 +224,16 @@ function AddNewTestProfessor() {
     let data = [...sections];
     data[sectionIndex].questions[questionIndex][event.target.name] =
       event.target.value;
+    setSections(data);
+  };
+
+  const handleQuestionProblemIdChange = (
+    sectionIndex,
+    questionIndex,
+    value
+  ) => {
+    let data = [...sections];
+    data[sectionIndex].questions[questionIndex]["problemId"] = value;
     setSections(data);
   };
 
@@ -206,7 +247,6 @@ function AddNewTestProfessor() {
 
   const handleTestMinimumPointsChanged = (event) => {
     setTestMinimumPoints(event.target.value);
-    console.log(event.target.value);
   };
 
   const addQuestion = (sectionIndex) => {
@@ -219,7 +259,9 @@ function AddNewTestProfessor() {
   const addAnswer = (sectionIndex, questionIndex) => {
     let newAnswer = getEmptyAnswer();
     let data = [...sections];
-    data[sectionIndex].questions[questionIndex].answers.push(newAnswer);
+    data[sectionIndex].questions[questionIndex].professorAnswers.push(
+      newAnswer
+    );
     setSections(data);
   };
 
@@ -231,12 +273,14 @@ function AddNewTestProfessor() {
 
   const removeAnswer = (sectionIndex, questionIndex, answerIndex) => {
     let data = [...sections];
-    data[sectionIndex].questions[questionIndex].answers.splice(answerIndex, 1);
+    data[sectionIndex].questions[questionIndex].professorAnswers.splice(
+      answerIndex,
+      1
+    );
     setSections(data);
   };
 
   const onFinishFailed = (errorInfo) => {
-    alert("a");
     toast.error(errorInfo.errorFields[0].errors[0], toastOptions);
   };
 
@@ -338,6 +382,34 @@ function AddNewTestProfessor() {
                             }
                             style={{ width: "45%" }}
                           />
+                        </Form.Item>
+                        <Form.Item
+                          style={{ display: "inline-block", width: "20%" }}
+                          name="problemId"
+                          label="Prob ID"
+                          value={question.problemId}
+                          wrapperCol={{
+                            offset: 0,
+                            span: 12,
+                          }}
+                        >
+                          <Select
+                            placeholder="Select problem Id to bind to question"
+                            name="problemId"
+                            onChange={(value) =>
+                              handleQuestionProblemIdChange(
+                                sectionIndex,
+                                questionIndex,
+                                value
+                              )
+                            }
+                          >
+                            {problemsList.map((option) => (
+                              <Option key={option.id} value={option.id}>
+                                {option.name}
+                              </Option>
+                            ))}
+                          </Select>
                         </Form.Item>{" "}
                         Question
                         <MinusCircleOutlined
@@ -358,7 +430,7 @@ function AddNewTestProfessor() {
                         />{" "}
                         {sections[sectionIndex].questions[
                           questionIndex
-                        ].answers.map((answer, answerIndex) => {
+                        ].professorAnswers.map((answer, answerIndex) => {
                           return (
                             <div
                               key={answerIndex}
@@ -391,7 +463,7 @@ function AddNewTestProfessor() {
                                   type="checkbox"
                                   id="isCorrect"
                                   name="isCorrect"
-                                  className={`answer_${answerIndex}`}
+                                  className={`answer_${questionIndex}_${answerIndex}`}
                                   value={answer.isCorrect}
                                   onChange={(event) =>
                                     handleAnswerIsCorrectChange(
