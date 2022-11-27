@@ -23,3 +23,5 @@ export const getKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace`;
 export const createKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace`;
 
 export const getAllSubjectsForStudentRoute = `${host}/api/Subjects/student`;
+
+export const postTestAnswersRoute = `${host}/api/TestResults`;
