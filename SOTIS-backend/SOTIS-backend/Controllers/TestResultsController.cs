@@ -87,7 +87,7 @@ namespace SOTIS_backend.Controllers
             var stream = new MemoryStream();
             using (var writeFile = new StreamWriter(stream, leaveOpen: true))
             {
-                using (var csv = new CsvWriter(writeFile, (CultureInfo)null, leaveOpen: true))
+                using (var csv = new CsvWriter(writeFile, CultureInfo.InvariantCulture, true))
                 {
                     csv.WriteRecords(testResults);
                 }
