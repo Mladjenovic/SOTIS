@@ -1,0 +1,15 @@
+TestResult:
+
+{"testId":"589c8a4e-0e47-47f6-bf3d-c25906a12f1b",
+"selectedStudentAnswers":[
+{"id":"4b880902-3e20-48a4-ba54-e9c26adb3467"},
+{"id":"625624ed-ae1b-4407-ac28-c4a97d4c1438"},
+{"id":"fc1eb74d-9f4a-441c-8810-165dabdd97c2"},
+{"id":"fe218990-7bb4-40b9-b49c-3a6d03c38405"},
+{"id":"566890db-28cf-4fa9-9fc5-9f798ef1f2d7"},
+{"id":"d45367e6-7f9d-475e-8e44-3a56b02aa557"},
+{"id":"0de020b9-3705-4354-88eb-a2268a732891"}]}
+
+
+
+
