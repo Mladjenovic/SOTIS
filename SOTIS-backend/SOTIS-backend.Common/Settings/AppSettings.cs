@@ -3,5 +3,7 @@
     public class AppSettings
     {
         public JwtSettings Jwt { get; set; }
+
+        public string IitaUrl { get; set; }
     }
 }

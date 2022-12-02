@@ -11,22 +11,30 @@ sys.path.append('learning_spaces/')
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/", methods=['POST','GET'])
+
+@app.route("/", methods=['POST'])
 def default_example():
-   if request.method == 'GET':
-        data_frame = pd.DataFrame({'a': [1, 0, 1], 'b': [0, 1, 0], 'c': [0, 1, 1]})
-        print("\n--------------------------------\n", data_frame, "\n--------------------------------\n")
-        response = iita(data_frame, v=1)
-        print("\n--------------------------------\n", response, "\n--------------------------------\n")
-        return pd.Series(response).to_json(orient='values')
-      
+    data_frame = pd.DataFrame({'a': [1, 0, 1], 'b': [0, 1, 0], 'c': [0, 1, 1]})
+    print("\n--------------------------------\n", data_frame, "\n--------------------------------\n")
+    response = iita(data_frame, v=1)
+    print("\n--------------------------------\n", response, "\n--------------------------------\n")
+    return pd.Series(response).to_json(orient='values')
+
 
 @app.route('/products', methods=['GET'])
 def products():
-  if request.method == 'GET':
-    products = [{"id": "1", "name": "name"}, {"id": "2", "name": "name2"}]
-    return json.dumps(products)
+    if request.method == 'GET':
+        products = [{"id": "1", "name": "name"}, {"id": "2", "name": "name2"}]
+        return json.dumps(products)
 
+
+@app.route("/iita", methods=['POST'])
+def iita_endpoint():
+    data_frame = pd.DataFrame(request.json)
+    print("\n--------------------------------\n", data_frame.to_json(orient='index'), "\n--------------------------------\n")
+    response = iita_exclude_transitive(data_frame, v=1)
+    print("\n--------------------------------\n", response, "\n--------------------------------\n")
+    return pd.Series(response).to_json(orient='index')
 
 
 if __name__ == "__main__":
