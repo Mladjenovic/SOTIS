@@ -1,0 +1,9 @@
+  /* show question and its answers together */
+  
+  select
+  ProfessorAnswers.Id as 'answer_id',
+  Questions.Text as 'question',
+  ProfessorAnswers.Text as 'answer',
+  ProfessorAnswers.IsCorrect,
+  Questions.PointsPerQuestion
+  from Questions inner join ProfessorAnswers on (Questions.Id = ProfessorAnswers.QuestionId)

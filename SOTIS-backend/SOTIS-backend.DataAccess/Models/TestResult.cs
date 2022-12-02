@@ -1,5 +1,6 @@
 ﻿using SOTIS_backend.DataAccess.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,5 +24,7 @@ namespace SOTIS_backend.DataAccess.Models
         public DateTime DateTime { get; set; }
 
         public double Points { get; set; }
+
+        public IEnumerable<CorrectlyAnsweredQuestion> CorrectlyAnsweredQuestions { get; set; }
     }
 }

@@ -25,5 +25,7 @@ namespace SOTIS_backend.DataAccess.Models
         public string ProblemId { get; set; }
 
         public Problem Problem { get; set; }
+
+        public IEnumerable<CorrectlyAnsweredQuestion> CorrectlyAnsweredQuestions { get; set; }
     }
 }

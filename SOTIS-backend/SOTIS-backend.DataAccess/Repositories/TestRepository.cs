@@ -13,6 +13,7 @@ namespace SOTIS_backend.DataAccess.Repositories
         {
             return Context.Set<Test>()
                     .Include(x => x.TestResults)
+                    .ThenInclude(x => x.Student)
                     .Include(x => x.Sections)
                     .ThenInclude(x => x.Questions)
                     .ThenInclude(x => x.ProfessorAnswers)

@@ -23,6 +23,18 @@ namespace SOTIS_backend.DataAccess
                 .WithMany(s => s.Students)
                 .HasForeignKey(sc => sc.SubjectId);
 
+            modelBuilder.Entity<CorrectlyAnsweredQuestion>()
+                .HasOne(caq => caq.TestResult)
+                .WithMany(tr => tr.CorrectlyAnsweredQuestions)
+                .HasForeignKey(caq => caq.TestResultId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CorrectlyAnsweredQuestion>()
+                .HasOne(caq => caq.Question)
+                .WithMany(q => q.CorrectlyAnsweredQuestions)
+                .HasForeignKey(caq => caq.QuestionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Subject>()
                 .HasMany(p => p.Tests)
                 .WithOne(b => b.Subject)

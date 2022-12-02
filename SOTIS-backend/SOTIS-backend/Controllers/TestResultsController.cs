@@ -42,9 +42,20 @@ namespace SOTIS_backend.Controllers
             {
                 return BadRequest("Test with given id does not exists");
             }
+            
             // todo: add validation if student is assigned to subject (which this test belongs)
 
+            /*
+            // add validation if student already took this test
+            var sessionInfo = GetSession();
+            if (_testResultRepository.FindBy(x => x.StudentId == sessionInfo.Id && x.TestId == testResultRequestDto.TestId).Any())
+            {
+                return BadRequest("Student already took this test");
+            }
+            */
+
             var totalPoints = 0.0;
+            var correctlyAnsweredQuestions = new List<CorrectlyAnsweredQuestion>();
             var studentAnswerIds = testResultRequestDto.SelectedStudentAnswers.Select(x => x.Id).ToList();
             foreach (var section in test.Sections)
             {
@@ -53,20 +64,27 @@ namespace SOTIS_backend.Controllers
                     var correctAnswerIds = question.ProfessorAnswers.Where(x => x.IsCorrect).Select(x => x.Id).ToList();
                     var incorrectAnswerIds = question.ProfessorAnswers.Where(x => !x.IsCorrect).Select(x => x.Id).ToList();
 
+                    // student gets points per question if ALL correnct answers are selected
+                    // and NONE of the incorrect answers are selected
                     if (correctAnswerIds.All(x => studentAnswerIds.Contains(x)) && 
                         !incorrectAnswerIds.Any(x => studentAnswerIds.Contains(x)))
                     {
                         totalPoints += question.PointsPerQuestion;
+                        correctlyAnsweredQuestions.Add(new CorrectlyAnsweredQuestion
+                        {
+                            QuestionId = question.Id
+                        });
                     }
                 }
             }
 
-            _testResultRepository.Add(new TestResult
+            var testResult = _testResultRepository.Add(new TestResult
             {
                 StudentId = GetSession().Id,
                 TestId = testResultRequestDto.TestId,
                 Points = totalPoints,
-                DateTime = DateTime.UtcNow
+                DateTime = DateTime.UtcNow,
+                CorrectlyAnsweredQuestions = correctlyAnsweredQuestions
             });
             _testResultRepository.Commit();
 
@@ -87,7 +105,7 @@ namespace SOTIS_backend.Controllers
             var stream = new MemoryStream();
             using (var writeFile = new StreamWriter(stream, leaveOpen: true))
             {
-                using (var csv = new CsvWriter(writeFile, (CultureInfo)null, leaveOpen: true))
+                using (var csv = new CsvWriter(writeFile, CultureInfo.InvariantCulture, true))
                 {
                     csv.WriteRecords(testResults);
                 }

@@ -36,9 +36,14 @@ namespace SOTIS_backend.Controllers.Helpers
             CreateMap<Problem, ProblemDto>().ReverseMap();
             CreateMap<Problem, ProblemCreateDto>().ReverseMap();
             CreateMap<PositionDto, NodeDetails>()
-                .ForMember(dst => dst.CoordinateX, map => map.MapFrom(dst => dst.X))
-                .ForMember(dst => dst.CoordinateY, map => map.MapFrom(dst => dst.Y))
+                .ForMember(dst => dst.CoordinateX, map => map.MapFrom(src => src.X))
+                .ForMember(dst => dst.CoordinateY, map => map.MapFrom(src => src.Y))
                 .ReverseMap();
+
+            CreateMap<TestResult, TestResultResponseDto>()
+                .ForMember(dst => dst.StudentName, map => map.MapFrom(src => src.Student.Name))
+                .ForMember(dst => dst.StudentSurname, map => map.MapFrom(src => src.Student.Surname))
+                .ForMember(dst => dst.StudentUsername, map => map.MapFrom(src => src.Student.Username));
         }
     }
 }
