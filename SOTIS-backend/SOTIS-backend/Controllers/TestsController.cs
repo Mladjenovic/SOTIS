@@ -7,6 +7,7 @@ using SOTIS_backend.Controllers.Dtos;
 using SOTIS_backend.Controllers.Helpers;
 using SOTIS_backend.DataAccess.Interfaces;
 using SOTIS_backend.DataAccess.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -73,6 +74,34 @@ namespace SOTIS_backend.Controllers
 
             var result = Mapper.Map<TestDto>(test);
             return Ok(result);
+        }
+
+        [HttpGet("/guidedTest/{testId}")]
+        [AuthorizationFilter(Role.Professor, Role.Student)]
+        public IActionResult CalculateNextQuestion([FromRoute] string testId)
+        {
+            var test = _testRepository.GetSingleThenInclude(testId);
+            if (test == null)
+            {
+                return BadRequest("Test with given id does not exists");
+            }
+
+            var result = Mapper.Map<TestDto>(test);
+            var questions = new List<QuestionDto>();
+
+            foreach (var section in result.Sections)
+            {
+                foreach (var question in section.Questions)
+                {
+                    questions.Add(question);
+                }
+            }
+
+            Random rnd = new Random();
+            int randIndex = rnd.Next(questions.Count);
+            QuestionDto random = questions[randIndex];
+
+            return Ok(random);
         }
 
         [HttpPost]

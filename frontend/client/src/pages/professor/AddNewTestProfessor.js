@@ -209,7 +209,7 @@ function AddNewTestProfessor() {
     data[sectionIndex].questions[questionIndex].professorAnswers[answerIndex][
       event.target.name
     ] = document.querySelector(
-      `.answer_${questionIndex}_${answerIndex}`
+      `.answer_${sectionIndex}_${questionIndex}_${answerIndex}`
     ).checked;
 
     setSections(data);
@@ -344,7 +344,7 @@ function AddNewTestProfessor() {
                   (question, questionIndex) => {
                     return (
                       <div
-                        key={questionIndex}
+                        key={sectionIndex + questionIndex}
                         style={{ marginLeft: "2rem", marginTop: "0rem" }}
                       >
                         <Form.Item style={{ display: "inline-block" }}>
@@ -384,9 +384,9 @@ function AddNewTestProfessor() {
                         </Form.Item>
                         <Form.Item
                           style={{ display: "inline-block", width: "20%" }}
-                          name="problemId"
+                          name={"problemId" + sectionIndex + questionIndex}
                           label="Prob ID"
-                          value={question.problemId}
+                          key={sectionIndex + questionIndex}
                           wrapperCol={{
                             offset: 0,
                             span: 12,
@@ -394,6 +394,7 @@ function AddNewTestProfessor() {
                         >
                           <Select
                             placeholder="Select problem Id to bind to question"
+                            key={sectionIndex + questionIndex}
                             name="problemId"
                             onChange={(value) =>
                               handleQuestionProblemIdChange(
@@ -432,7 +433,7 @@ function AddNewTestProfessor() {
                         ].professorAnswers.map((answer, answerIndex) => {
                           return (
                             <div
-                              key={answerIndex}
+                              key={sectionIndex + questionIndex + answerIndex}
                               style={{ marginLeft: "2rem", marginTop: "0rem" }}
                             >
                               <Form.Item style={{ display: "inline-block" }}>
@@ -462,7 +463,7 @@ function AddNewTestProfessor() {
                                   type="checkbox"
                                   id="isCorrect"
                                   name="isCorrect"
-                                  className={`answer_${questionIndex}_${answerIndex}`}
+                                  className={`answer_${sectionIndex}_${questionIndex}_${answerIndex}`}
                                   value={answer.isCorrect}
                                   onChange={(event) =>
                                     handleAnswerIsCorrectChange(

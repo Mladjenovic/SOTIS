@@ -39,6 +39,7 @@ import Student from "../pages/student/Student";
 import AllSubjectsStudent from "../pages/student/AllSubjectsStudent";
 import AllTestsForSubjectStudent from "../pages/student/AllTestsForSubjectStudent";
 import StudentTakeTest from "../pages/student/StudentTakeTest";
+import StudentTakeGuidedTest from "../pages/student/StudentTakeGuidedTest";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -209,6 +210,10 @@ function CustomLayout() {
                 <Route
                   path="/student/take/test/:testId"
                   element={<StudentTakeTest />}
+                />
+                <Route
+                  path="/student/take/guidedTest/:testId"
+                  element={<StudentTakeGuidedTest />}
                 />
                 <Route path="*" element={<AllSubjectsStudent />} />
               </Route>
