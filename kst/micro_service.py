@@ -4,7 +4,7 @@ import pandas as pd
 from flask_cors import CORS
 from flask import Flask, request, jsonify, make_response
 
-from learning_spaces.kst import iita
+from learning_spaces.kst import iita, iita_exclude_transitive
 
 sys.path.append('learning_spaces/')
 
@@ -31,7 +31,7 @@ def products():
 @app.route("/iita", methods=['POST'])
 def iita_endpoint():
     data_frame = pd.DataFrame(request.json)
-    print("\n--------------------------------\n", data_frame.to_json(orient='index'), "\n--------------------------------\n")
+    print("\n--------------------------------\n", data_frame.to_json(orient='split'), "\n--------------------------------\n")
     response = iita_exclude_transitive(data_frame, v=1)
     print("\n--------------------------------\n", response, "\n--------------------------------\n")
     return pd.Series(response).to_json(orient='index')

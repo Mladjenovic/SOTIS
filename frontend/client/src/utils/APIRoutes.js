@@ -20,7 +20,7 @@ export const createNewProblemRoute = `${host}/api/Problems`;
 export const createTestRoute = `${host}/api/Tests`;
 
 export const getKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace`;
-export const createKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace`;
+export const createKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace/expected`;
 
 export const getAllSubjectsForStudentRoute = `${host}/api/Subjects/student`;
 

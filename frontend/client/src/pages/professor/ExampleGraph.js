@@ -73,7 +73,7 @@ const ExampleGraph = () => {
 
   useEffect(() => {
     axios
-      .get(`${getKnowledgeSpaceRoute}/${params.subjectId}`, {
+      .get(`${getKnowledgeSpaceRoute}/${params.subjectId}/expected`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
             JSON.stringify(localStorage.getItem("access-token"))
@@ -94,7 +94,7 @@ const ExampleGraph = () => {
   const saveGraph = () => {
     axios
       .put(
-      getKnowledgeSpaceRoute, 
+      createKnowledgeSpaceRoute, 
       {
         subjectId: params.subjectId,
         nodes: nodes,

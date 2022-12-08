@@ -17,6 +17,10 @@ namespace SOTIS_backend.Controllers.Helpers
             {
                 CreateHttpResponse(context, (int)HttpStatusCode.Forbidden);
             }
+            else if (context.Exception is ValidationException)
+            {
+                CreateHttpResponse(context, (int)HttpStatusCode.BadRequest);
+            }
             else
             {
                 CreateHttpResponse(context, (int)HttpStatusCode.InternalServerError);
