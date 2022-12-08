@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import uuid from "react-uuid";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   getTestStudentRoute,
@@ -15,7 +16,6 @@ import loader from "../../assets/loader.gif";
 import {
   Card,
   CardContent,
-  CardMedia,
   CardHeader,
   List,
   ListItemButton,
@@ -35,6 +35,7 @@ function StudentTakeTest() {
   let timer;
 
   const params = useParams();
+  const navigate = useNavigate();
   const ref = useRef(null);
 
   const startTimer = () => {
@@ -94,9 +95,9 @@ function StudentTakeTest() {
       )
       .then((res) => {
         toast.success(`successfully submitet test!`, toastOptions);
-        // setTimeout(() => {
-        //   navigate(`/professor/subject/tests/${params.subjectId}`);
-        // }, 5000);
+        setTimeout(() => {
+          navigate(`/student/subject/tests/:subjectId/${params.subjectId}`);
+        }, 3500);
       })
       .catch((error) => {
         console.error(error);
@@ -168,7 +169,7 @@ function StudentTakeTest() {
               <List>
                 {questions[questionIndex].professorAnswers.map(
                   (item, index) => (
-                    <ListItemButton key={index}>
+                    <ListItemButton key={item.id + index}>
                       <div style={{ display: "inline-flex" }}>
                         <div>
                           <b>{String.fromCharCode(65 + index) + " . "}</b>

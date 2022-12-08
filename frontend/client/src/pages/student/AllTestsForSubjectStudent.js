@@ -50,6 +50,14 @@ function AllTestsForSubjectStudent() {
             >
               take
             </button>
+            <button
+              style={{ marginLeft: "0.5rem" }}
+              onClick={() => {
+                handleTakeGuidedTestClick(record);
+              }}
+            >
+              guided
+            </button>
           </>
         );
       },
@@ -58,6 +66,10 @@ function AllTestsForSubjectStudent() {
 
   const handleTakeTestClick = (record) => {
     navigate(`/student/take/test/${record.id}`);
+  };
+
+  const handleTakeGuidedTestClick = (record) => {
+    navigate(`/student/take/guidedTest/${record.id}`);
   };
 
   useEffect(() => {
@@ -70,7 +82,6 @@ function AllTestsForSubjectStudent() {
         },
       })
       .then((res) => {
-        console.log(res.data);
         setDataSource(res.data);
         setIsLoading(false);
       })
