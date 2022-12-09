@@ -37,7 +37,7 @@ namespace SOTIS_backend.Controllers
         [AuthorizationFilter(Role.Student)]
         public IActionResult Create([FromBody] TestResultRequestDto testResultRequestDto)
         {
-            var test = _testRepository.GetSingleThenInclude(testResultRequestDto.TestId);
+            var test = _testRepository.GetSingleThenIncludeAll(testResultRequestDto.TestId);
             if (test == null)
             {
                 return BadRequest("Test with given id does not exists");
@@ -95,7 +95,7 @@ namespace SOTIS_backend.Controllers
         [AuthorizationFilter(Role.Professor)]
         public IActionResult GetAll([FromRoute] string testId)
         {
-            var test = _testRepository.GetSingleThenInclude(testId);
+            var test = _testRepository.GetSingleThenIncludeAll(testId);
             if (test == null)
             {
                 return BadRequest("Test with given id does not exists");

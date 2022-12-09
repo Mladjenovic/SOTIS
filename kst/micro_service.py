@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from flask_cors import CORS
 from flask import Flask, request, jsonify, make_response
+from collections import defaultdict
 
 from learning_spaces.kst import iita, iita_exclude_transitive, stochastic_markov_sotis
 
@@ -37,39 +38,27 @@ def iita_endpoint():
     return pd.Series(response).to_json(orient='index')
 
 
-@app.route("/stohastic_markov", methods=['POST'])
-def iita_endpoint():
-    '''
-    {
-        states: [
-            {
-                problems: ['a', 'b'],
-                probability: 0.125
-            },
-            {}
-        ],
-        question: 'some question',
-        is_answer_correct: True,
-        threshold: 0.8
-    }
-    '''
-    r = request.json
+@app.route("/stochastic_markov", methods=['POST'])
+def stochastic_markov_endpoint():
+    request_body = request.json
+    request_body = defaultdict(None, request_body)
+
     states = {}
-    for state in r.states:
-        states[tuple(state['problems'])] = state['probability']
+    for state in request_body['KnowledgeStates']:
+        states[tuple(state['ProblemIds'])] = state['Probability']
     
-    new_states, new_question, final_state_reached = stochastic_markov_sotis(states, r.threshold, r.question, r.is_answer_correct)
+    new_states, new_problem, final_state_reached = stochastic_markov_sotis.stochastic_markov_sotis(states, 
+        request_body["Threshold"], request_body["ProblemId"], request_body["IsAnswerCorrect"])
     
     response_states = []
     for state, probability in new_states.items():
-        response_states.append({'problems': list(state), 'probability': probability})
-    
-    return json.dumps({
-        'states': response_states,
-        'question': new_question,
-        'final_state_reached': final_state_reached
-    })
+        response_states.append({'ProblemIds': list(state), 'Probability': probability})
 
+    return json.dumps({
+            'KnowledgeStates': response_states,
+            'ProblemId': new_problem,
+            'IsFinalStateReached': bool(final_state_reached)
+        })
 
 
 if __name__ == "__main__":

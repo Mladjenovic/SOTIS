@@ -9,7 +9,7 @@ namespace SOTIS_backend.DataAccess.Repositories
     {
         public TestRepository(SotisDbContext context) : base(context) { }
 
-        public Test GetSingleThenInclude(string testId)
+        public Test GetSingleThenIncludeAll(string testId)
         {
             return Context.Set<Test>()
                     .Include(x => x.TestResults)

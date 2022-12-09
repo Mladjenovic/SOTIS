@@ -73,10 +73,12 @@ def stochastic_markov_sotis(states, threshold = 0.75, question=None, is_answer_c
     if question is not None and is_answer_correct is not None: 
         r = response_rule(question, states)
         updating_rule(question, is_answer_correct, r, states)
-
-    final_state_reached = is_final_state(states, threshold)
+        final_state_reached = is_final_state(states, threshold)
+    else:
+        final_state_reached = False # prevent case when some of initial probabilities is greater than threshold 
+    
     new_question = None if final_state_reached else questioning_rule(states)
-    print('Chosen question:', new_question)
+    print('Chosen state:', new_question)
     print('New states:', states)
     print('Final state reached:', final_state_reached)
     return states, new_question, final_state_reached

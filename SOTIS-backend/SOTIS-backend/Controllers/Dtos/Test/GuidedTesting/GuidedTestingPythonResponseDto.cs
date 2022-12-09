@@ -1,0 +1,9 @@
+﻿namespace SOTIS_backend.Controllers.Dtos.Test.GuidedTesting
+{
+    public class GuidedTestingPythonResponseDto : GuidedTestingBaseDto
+    {
+        public string ProblemId { get; set; }
+
+        public bool IsFinalStateReached { get; set; }
+    }
+}
