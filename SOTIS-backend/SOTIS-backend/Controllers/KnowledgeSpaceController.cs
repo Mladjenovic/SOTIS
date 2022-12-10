@@ -6,6 +6,7 @@ using SOTIS_backend.Common.Exceptions;
 using SOTIS_backend.Common.Settings;
 using SOTIS_backend.Common.Utilities;
 using SOTIS_backend.Controllers.Dtos;
+using SOTIS_backend.Controllers.Dtos.KnowledgeSpace;
 using SOTIS_backend.Controllers.Helpers;
 using SOTIS_backend.DataAccess.Interfaces;
 using SOTIS_backend.DataAccess.Models;
@@ -120,18 +121,67 @@ namespace SOTIS_backend.Controllers
 
             var iitaResponse = await HttpHelper.PostAsync<IitaResponse>(AppSettings.IitaUrl, iitaEntries);
 
-            var knowledgeSpaceDto = PrepareRealKS(subjectId, expectedKnowledgeSpace, iitaEntries, iitaResponse);
+            var knowledgeSpaceDto = PrepareRealKS(subjectId, expectedKnowledgeSpace, iitaEntries.Keys.ToList(), iitaResponse);
             PutKS(subject, knowledgeSpaceDto, KnowledgeSpaceType.Real);
 
             return Ok(201);
         }
 
-        private KnowledgeSpaceDto PrepareRealKS(string subjectId, KnowledgeSpace expectedKnowledgeSpace, Dictionary<string, List<int>> iitaEntries, IitaResponse response)
+        [HttpPut("{subjectId}/real/simu")]
+        [AuthorizationFilter(Role.Professor)]
+        public async Task<IActionResult> CrateRealKnowledgeSpaceWithSimu([FromRoute] string subjectId)
+        {
+            var subject = _subjectRepository.GetSingle(x => x.Id == subjectId, x => x.KnowledgeSpaces);
+            if (subject == null)
+            {
+                return BadRequest("Subject does not exist for given id");
+            }
+
+            var expectedKnowledgeSpace = _knowledgeSpacesRepository
+                            .FindByIncluding(x => x.SubjectId == subjectId, x => x.Surmises)
+                            .FirstOrDefault(x => x.KnowledgeSpaceType == KnowledgeSpaceType.Expected);
+            if (expectedKnowledgeSpace == null)
+            {
+                return BadRequest($"You should create expected knowledge space for subject with id: {subjectId} before creating real knowledge space");
+            }
+
+            var surmises = expectedKnowledgeSpace.Surmises;
+            var problems = _problemRepository.FindByIncluding(x => x.SubjectId == subjectId, x => x.SourceSurmises, x => x.DestinationSurmises);
+
+            var counter = 0;
+            var problemIndexToId = problems.ToDictionary(x => counter++, x => x.Id);
+            var problemIdToIndex = problemIndexToId.ToDictionary(x => x.Value, x => x.Key);
+
+            var implications = surmises.Select(surmise => new List<int>
+            {
+                problemIdToIndex[surmise.SourceProblemId],
+                problemIdToIndex[surmise.DestinationProblemId]
+            });
+
+            var simuRequest = new SimuRequest
+            {
+                NumberOfProblems = problems.Count(),
+                NumberOfTestResults = AppSettings.SimuSettings.NumberOfTestResults,
+                CEprobability = AppSettings.SimuSettings.CEprobability,
+                LGprobability = AppSettings.SimuSettings.LGprobability,
+                Delta = AppSettings.SimuSettings.Delta,
+                Implications = implications
+            };
+
+            var simuResponse = await HttpHelper.PostAsync<IitaResponse>(AppSettings.SimuUrl, simuRequest);
+
+            var knowledgeSpaceDto = PrepareRealKS(subjectId, expectedKnowledgeSpace, problemIdToIndex.Keys.ToList(), simuResponse);
+            PutKS(subject, knowledgeSpaceDto, KnowledgeSpaceType.Real);
+
+            return Ok(201);
+        }
+
+        private KnowledgeSpaceDto PrepareRealKS(string subjectId, KnowledgeSpace expectedKnowledgeSpace, IEnumerable<string> problemIds, IitaResponse response)
         {
             var expectedKnowledgeSpaceWithDependencies = _knowledgeSpacesRepository.GetSingle(x => x.Id == expectedKnowledgeSpace.Id, x => x.Surmises, x => x.NodeDetails); // retrieve dependent entities
             var expectedKnowledgeSpaceDto = CreateKSdto(expectedKnowledgeSpaceWithDependencies);
             var counter = 0;
-            var problemIndexToId = iitaEntries.Keys.ToList().ToDictionary(x => counter++, x => x);
+            var problemIndexToId = problemIds.ToDictionary(x => counter++, x => x);
             var edges = response.Implications.Select(x => new EdgeDto
             {
                 Source = problemIndexToId[x.First()],

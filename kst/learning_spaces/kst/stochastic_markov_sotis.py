@@ -68,7 +68,7 @@ def is_final_state(states: dict[Tuple[str], float], threshold: float):
     state, probability = _likeliest_state(states)
     return probability >= threshold
 
-def stochastic_markov_sotis(states, threshold = 0.9, question=None, is_answer_correct=None):
+def stochastic_markov_sotis(states, threshold = 0.8, question=None, is_answer_correct=None):
     _scale_probabilites(states)  # just in case
     if question is not None and is_answer_correct is not None: 
         r = response_rule(question, states)

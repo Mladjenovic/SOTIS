@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask import Flask, request, jsonify, make_response
 from collections import defaultdict
 
-from learning_spaces.kst import iita, iita_exclude_transitive, stochastic_markov_sotis
+from learning_spaces.kst import iita, iita_exclude_transitive, stochastic_markov_sotis, imp2state, simu
 
 sys.path.append('learning_spaces/')
 
@@ -61,5 +61,28 @@ def stochastic_markov_endpoint():
         })
 
 
+@app.route("/states", methods=['POST'])
+def get_states():
+    request_body = request.json
+    result = imp2state([tuple(item) for item in request_body['implications']], request_body['number_of_problmes'])
+    return json.dumps({
+            'states': [[int(l) for l in list(ll)] for ll in list(result)]  # need to convert numpy int8 to python int
+        })
+
+
+@app.route("/simu", methods=['POST'])
+def simulate_data():
+    request_body = request.json
+    result = simu(request_body['number_of_problems'], 
+                  request_body['number_of_test_results'], 
+                  request_body['ce_probability'], 
+                  request_body['lg_probability'], 
+                  request_body['delta'],
+                  [tuple(imp) for imp in request_body['implications']])
+
+    simu_df = pd.DataFrame(result['dataset'], columns=['0', '1', '2', '3', '4', '5', '6'])
+    response = iita_exclude_transitive(simu_df, v=1)
+    return pd.Series(response).to_json(orient='index')
+    
 if __name__ == "__main__":
   app.run(host="localhost", port=7777)

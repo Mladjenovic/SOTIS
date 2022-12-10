@@ -9,5 +9,11 @@
         public string StochasticMarkovUrl { get; set; }
 
         public double StochasticMarkovThreshold { get; set; }
+
+        public string StatesUrl { get; set; }
+
+        public string SimuUrl { get; set; }
+
+        public SimuSettings SimuSettings { get; set; }
     }
 }

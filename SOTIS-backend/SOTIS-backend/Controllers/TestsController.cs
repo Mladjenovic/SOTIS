@@ -10,7 +10,6 @@ using SOTIS_backend.Controllers.Dtos.Test.GuidedTesting;
 using SOTIS_backend.Controllers.Helpers;
 using SOTIS_backend.DataAccess.Interfaces;
 using SOTIS_backend.DataAccess.Models;
-using SOTIS_backend.DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,7 +100,7 @@ namespace SOTIS_backend.Controllers
                 // need to retrieve first question
                 pythonRequestDto = new GuidedTestingPythonRequestDto
                 {
-                    KnowledgeStates = GetInitialKnowledgeStates(test.SubjectId)
+                    KnowledgeStates = await GetInitialKnowledgeStatesAsync(test.SubjectId)
                 };
             }
             else
@@ -241,7 +240,7 @@ namespace SOTIS_backend.Controllers
                 !incorrectAnswerIds.Any(x => frontendRequestDto.StudentAnswerIds.Contains(x));
         }
 
-        private IEnumerable<KnowledgeState> GetInitialKnowledgeStates(string subjectId)
+        private async Task<IEnumerable<KnowledgeState>> GetInitialKnowledgeStatesAsync(string subjectId)
         {
             var knowledgeSpace = _knowledgeSpacesRepository
                                         .FindByIncluding(x => x.SubjectId == subjectId, x => x.Surmises)
@@ -250,43 +249,46 @@ namespace SOTIS_backend.Controllers
             {
                 throw new ValidationException($"Expected knowledge space does not exists for subjectid: {subjectId}");
             }
-            var validSurmiseIds = knowledgeSpace.Surmises.Select(x => x.Id);
+            
+            var surmises = knowledgeSpace.Surmises;
+            var problems = _problemRepository.FindByIncluding(x => x.SubjectId == subjectId, x => x.SourceSurmises, x => x.DestinationSurmises);
+
+            var counter = 0;
+            var problemIndexToId = problems.ToDictionary(x => counter++, x => x.Id);
+            var problemIdToIndex = problemIndexToId.ToDictionary(x => x.Value, x => x.Key);
+
+            var implications = surmises.Select(surmise => new List<int>
+            {
+                problemIdToIndex[surmise.SourceProblemId],
+                problemIdToIndex[surmise.DestinationProblemId]
+            });
+
+            var response = await HttpHelper.PostAsync<StatesResponse>(AppSettings.StatesUrl, new 
+            { 
+                implications = implications, 
+                number_of_problmes = problems.Count()
+            });
 
             var knowledgeStates = new List<KnowledgeState>();
-            var problems = _problemRepository.FindByIncluding(x => x.SubjectId == subjectId, x => x.SourceSurmises, x => x.DestinationSurmises);
-            foreach (var problem in problems)
+            foreach (var state in response.States)
             {
-                var problemsIds = new List<string>() { problem.Id };
-                var oldtempProblemIds = new List<string>() { problem.Id };
-                var newTempProblemIds = new List<string>();
-                while (true)
+                var problemIds = new List<string>();
+                var stateList = state.ToList();
+                for (var i = 0; i < stateList.Count; i++)
                 {
-                    foreach (var problemId in oldtempProblemIds)
+                    if (stateList[i] == 1)
                     {
-                        var tempProblem = problems.First(x => x.Id == problemId);
-                        var validSurmises = tempProblem.DestinationSurmises.Where(x => validSurmiseIds.Contains(x.Id));
-                        foreach (var surmise in validSurmises)
-                        {
-                            problemsIds.Add(surmise.SourceProblemId);
-                            newTempProblemIds.Add(surmise.SourceProblemId);
-                        }
-                    }
-                    if (newTempProblemIds.Count == 0)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        oldtempProblemIds = newTempProblemIds;
-                        newTempProblemIds = new List<string>();
+                        problemIds.Add(problemIndexToId[i]);
                     }
                 }
+
                 knowledgeStates.Add(new KnowledgeState
                 {
-                    ProblemIds = problemsIds.Distinct(),
+                    ProblemIds = problemIds,
                     Probability = 1
                 });
             }
+
             return knowledgeStates;
         }
     }
