@@ -18,7 +18,7 @@ def _likeliest_state(states: dict[Tuple[str], float]) -> Tuple[Tuple[str], float
     Returns likeliest state and its probability.
     :return: (state, probability)
     """
-    return max(states.items(), key=operator.itemgetter(1))
+    return random.choices(population=list(states.items()), weights=list(states.values()), k=1)[0]
 
 def questioning_rule(states: dict[Tuple[str], float]) -> str:
     """
@@ -68,7 +68,7 @@ def is_final_state(states: dict[Tuple[str], float], threshold: float):
     state, probability = _likeliest_state(states)
     return probability >= threshold
 
-def stochastic_markov_sotis(states, threshold = 0.75, question=None, is_answer_correct=None):
+def stochastic_markov_sotis(states, threshold = 0.9, question=None, is_answer_correct=None):
     _scale_probabilites(states)  # just in case
     if question is not None and is_answer_correct is not None: 
         r = response_rule(question, states)

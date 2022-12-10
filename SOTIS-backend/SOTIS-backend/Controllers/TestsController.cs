@@ -284,7 +284,7 @@ namespace SOTIS_backend.Controllers
                 knowledgeStates.Add(new KnowledgeState
                 {
                     ProblemIds = problemsIds.Distinct(),
-                    Probability = (new Random()).NextDouble()
+                    Probability = 1
                 });
             }
             return knowledgeStates;
