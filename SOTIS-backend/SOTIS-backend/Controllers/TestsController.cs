@@ -84,7 +84,7 @@ namespace SOTIS_backend.Controllers
             return Ok(result);
         }
 
-        [HttpPost("/guidedTest/{testId}")]
+        [HttpPost("guidedTest/{testId}")]
         [AuthorizationFilter(Role.Professor, Role.Student)]
         public async Task<IActionResult> CalculateNextQuestionAsync([FromRoute] string testId, [FromBody] GuidedTestingFrontendRequestDto frontendRequestDto)
         {

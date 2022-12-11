@@ -25,10 +25,12 @@ function StudentTakeGuidedTest() {
   const [question, setQuestion] = useState([]);
   const [timeTaken, setTimeTaken] = useState(0);
   const [nextBtnShow, setNextBtnShow] = useState(true);
+  const [bulkObject, setBulkObject] = useState({});
 
   let timer;
 
   const params = useParams();
+  const navigate = useNavigate();
   const ref = useRef(null);
 
   const startTimer = () => {
@@ -43,12 +45,20 @@ function StudentTakeGuidedTest() {
       document.querySelector(`.answer_${questionIndex}_${answerIndex}`).checked;
 
     setQuestion(data);
-    console.log(question);
   };
 
   const handdleNextQuestionClick = () => {
+    question.professorAnswers.forEach((answer) => {
+      if (
+        answer.isCorrect &&
+        !bulkObject.studentAnswerIds.includes(answer.id)
+      ) {
+        bulkObject.studentAnswerIds.push(answer.id);
+      }
+    });
+
     axios
-      .get(guidedTestRoute + `/${params.testId}`, {
+      .post(guidedTestRoute + `/${params.testId}`, bulkObject, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
             JSON.stringify(localStorage.getItem("access-token"))
@@ -56,15 +66,29 @@ function StudentTakeGuidedTest() {
         },
       })
       .then((res) => {
-        console.log(res.data);
-        res.data.professorAnswers.forEach((answer) => {
-          answer.isCorrect = false;
-        });
+        if (res.data.isFinalStateReached == true) {
+          toast.info("Guided test is finished✅");
+          setTimeout(() => {
+            navigate(`/student`);
+          }, 5000);
+        } else {
+          if (question.text === res.data.question.text) {
+            handdleNextQuestionClick();
+          }
 
-        setQuestion(res.data);
+          res.data.question.professorAnswers.forEach((answer) => {
+            answer.isCorrect = false;
+          });
 
-        startTimer();
-        setIsLoading(false);
+          setQuestion(res.data.question);
+          setBulkObject({
+            question: res.data.question,
+            knowledgeStates: res.data.knowledgeStates,
+            studentAnswerIds: [],
+          });
+
+          setIsLoading(false);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -74,20 +98,32 @@ function StudentTakeGuidedTest() {
 
   useEffect(() => {
     axios
-      .get(guidedTestRoute + `/${params.testId}`, {
-        headers: {
-          Authorization: `Bearer ${JSON.parse(
-            JSON.stringify(localStorage.getItem("access-token"))
-          )}`,
-        },
-      })
+      .post(
+        guidedTestRoute + `/${params.testId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(
+              JSON.stringify(localStorage.getItem("access-token"))
+            )}`,
+          },
+        }
+      )
       .then((res) => {
-        console.log(res.data);
-        res.data.professorAnswers.forEach((answer) => {
+        console.log("Res data: ", res.data);
+        res.data.question.professorAnswers.forEach((answer) => {
           answer.isCorrect = false;
         });
 
-        setQuestion(res.data);
+        setQuestion(res.data.question);
+        var obj = {
+          question: res.data.question,
+          knowledgeStates: res.data.knowledgeStates,
+          studentAnswerIds: [],
+        };
+        console.log("Bulk object: ", obj);
+
+        setBulkObject(obj);
 
         startTimer();
         setIsLoading(false);
