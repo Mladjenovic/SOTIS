@@ -5,7 +5,7 @@ import React, {
   useCallback,
   Fragment,
 } from "react";
-import { Button } from "antd";
+import { Button, Row, Col } from "antd";
 import axios from "axios";
 import {
   getKnowledgeSpaceRoute,
@@ -42,14 +42,14 @@ localforage.config({
 const flowKey = "example-flow";
 
 /*
-const initialNodes = [
-  { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 0 } },
-  { id: '2', data: { label: 'Node 2' }, position: { x: 150, y: 100 } },
-  { id: '3', data: { label: 'Node 2' }, position: { x: 250, y: 100 } },
-];
-
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
-*/
+  const initialNodes = [
+    { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 0 } },
+    { id: '2', data: { label: 'Node 2' }, position: { x: 150, y: 100 } },
+    { id: '3', data: { label: 'Node 2' }, position: { x: 250, y: 100 } },
+  ];
+  
+  const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+  */
 const onLoad = (reactFlowInstance) => {
   reactFlowInstance.fitView();
 };
@@ -68,7 +68,7 @@ const defaultEdgeOptions = {
 
 const getId = () => uuidv4();
 
-const ExampleGraph = () => {
+const GraphCompare = () => {
   const navigate = useNavigate();
   const params = useParams();
   const edgeUpdateSuccessful = useRef(true);
@@ -196,82 +196,94 @@ const ExampleGraph = () => {
     setEdges((eds) => eds.filter((edge) => edge.id !== id));
   };
 
-  const onNodeClick = (event, node) => {
-    if (shouldDelete) {
-      const edgesToRemove = getConnectedEdges([node], edges);
-      edgesToRemove.map((edge) => deleteEdgeById(edge.id));
-      deleteNodeById(node.id);
-    }
-  };
-
   return (
-    <Fragment>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={{ width: "90%" }}>
-          <ReactFlowProvider>
-            <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onInit={setReactFlowInstance}
-                onDrop={onDrop}
-                onDragOver={onDragOver}
-                //onLoad={setRfInstance}
-                style={{
-                  width: "100%",
-                  height: "80vh",
-                  border: "1px solid #16001E",
-                }}
-                onConnect={onConnect}
-                connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
-                connectionLineType="bezier"
-                defaultEdgeOptions={defaultEdgeOptions}
-                snapToGrid={true}
-                snapGrid={[16, 16]}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onNodeClick={onNodeClick}
-                deleteKeyCode={46}
-                selectionKeyCode={17}
-                //onNodeDragStop={onNodeDragStop}
-                edgeTypes={edgeTypes}
-                onEdgeUpdate={onEdgeUpdate}
-                onEdgeUpdateStart={onEdgeUpdateStart}
-                onEdgeUpdateEnd={onEdgeUpdateEnd}
-              >
-                <Background color="#888" gap={16} />
-                <Controls />
-                <div
-                  style={{ position: "absolute", left: 10, top: 10, zIndex: 4 }}
-                >
-                  <div>
-                    <label htmlFor="shouldDelete">
-                      delete nodes on click
-                      <input
-                        id="shouldDelete"
-                        type="checkbox"
-                        checked={shouldDelete}
-                        onChange={(event) =>
-                          setShouldDelete(event.target.checked)
-                        }
-                        className="react-flow__ishidden"
-                      />
-                    </label>
-                  </div>
+    <Row>
+      <Col style={{ width: "50%" }}>
+        <Fragment>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <div style={{ width: "100%" }}>
+              <ReactFlowProvider>
+                <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+                  <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onInit={setReactFlowInstance}
+                    onDrop={onDrop}
+                    onDragOver={onDragOver}
+                    //onLoad={setRfInstance}
+                    style={{
+                      width: "100%",
+                      height: "80vh",
+                      border: "1px solid #16001E",
+                    }}
+                    onConnect={onConnect}
+                    connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
+                    connectionLineType="bezier"
+                    defaultEdgeOptions={defaultEdgeOptions}
+                    snapToGrid={true}
+                    snapGrid={[16, 16]}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    deleteKeyCode={46}
+                    selectionKeyCode={17}
+                    //onNodeDragStop={onNodeDragStop}
+                    edgeTypes={edgeTypes}
+                    onEdgeUpdate={onEdgeUpdate}
+                    onEdgeUpdateStart={onEdgeUpdateStart}
+                    onEdgeUpdateEnd={onEdgeUpdateEnd}
+                  >
+                    <Background color="#888" gap={16} />
+                  </ReactFlow>
                 </div>
-              </ReactFlow>
+              </ReactFlowProvider>
             </div>
-          </ReactFlowProvider>
-        </div>
-        <div style={{ overflow: "auto", marginLeft: "1rem" }}>
-          <Sidebar subjectId={params.subjectId} />
-          <Button onClick={saveGraph} style={{ borderRadius: "1rem" }}>
-            Save
-          </Button>
-        </div>
-      </div>
-    </Fragment>
+          </div>
+        </Fragment>
+      </Col>
+      <Col style={{ width: "50%" }}>
+        <Fragment>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <div style={{ width: "100%" }}>
+              <ReactFlowProvider>
+                <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+                  <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onInit={setReactFlowInstance}
+                    onDrop={onDrop}
+                    onDragOver={onDragOver}
+                    //onLoad={setRfInstance}
+                    style={{
+                      width: "100%",
+                      height: "80vh",
+                      border: "1px solid #16001E",
+                    }}
+                    onConnect={onConnect}
+                    connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
+                    connectionLineType="bezier"
+                    defaultEdgeOptions={defaultEdgeOptions}
+                    snapToGrid={true}
+                    snapGrid={[16, 16]}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    deleteKeyCode={46}
+                    selectionKeyCode={17}
+                    //onNodeDragStop={onNodeDragStop}
+                    edgeTypes={edgeTypes}
+                    onEdgeUpdate={onEdgeUpdate}
+                    onEdgeUpdateStart={onEdgeUpdateStart}
+                    onEdgeUpdateEnd={onEdgeUpdateEnd}
+                  >
+                    <Background color="#888" gap={16} />
+                  </ReactFlow>
+                </div>
+              </ReactFlowProvider>
+            </div>
+          </div>
+        </Fragment>
+      </Col>
+    </Row>
   );
 };
 
-export default ExampleGraph;
+export default GraphCompare;

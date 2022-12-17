@@ -83,6 +83,23 @@ function AllSubjectsProfessor() {
         );
       },
     },
+    {
+      key: "7",
+      title: "Compare",
+      render: (record) => {
+        return (
+          <>
+            <button
+              onClick={() => {
+                handleCompareGraphsClick(record);
+              }}
+            >
+              Compare
+            </button>
+          </>
+        );
+      },
+    },
   ];
 
   useEffect(() => {
@@ -111,6 +128,9 @@ function AllSubjectsProfessor() {
   };
   const handleGraphClick = (record) => {
     navigate(`/professor/subject/graph/${record.id}`);
+  };
+  const handleCompareGraphsClick = (record) => {
+    navigate(`/professor/subject/graphCompare/${record.id}`);
   };
 
   return (

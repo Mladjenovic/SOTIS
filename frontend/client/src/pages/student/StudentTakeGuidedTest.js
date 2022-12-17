@@ -26,6 +26,9 @@ function StudentTakeGuidedTest() {
   const [timeTaken, setTimeTaken] = useState(0);
   const [nextBtnShow, setNextBtnShow] = useState(true);
   const [bulkObject, setBulkObject] = useState({});
+  const [store, setStore] = useState([]); //combination of questionId & studentAnswerIds
+  const [threshouldCnt, setThreshouldCnt] = useState(0); // when we send the same question to backend 10 times, then the threshold is reached
+  const [isThresholdReached, setIsTresholdReached] = useState(false); // Threshould is reached when threshouldCnt reached to 10
 
   let timer;
 
@@ -57,6 +60,34 @@ function StudentTakeGuidedTest() {
       }
     });
 
+    const isFoundinStore = store.some((element) => {
+      if (element.questionId === question.id) return true;
+      return false;
+    });
+    const currentElementFromStore = store.some((element) => {
+      if (element.questionId === question.id) return element;
+    });
+
+    if (isFoundinStore) {
+      if (threshouldCnt >= 10) {
+        alert("Test is finished, sending isThresholdReached flag");
+        // TODO
+        // Send actual threshold flag
+      }
+      console.log(`Question ${question.id} is already in store`);
+      setThreshouldCnt(threshouldCnt + 1);
+      setBulkObject({
+        question: bulkObject.question,
+        knowledgeStates: bulkObject.knowledgeStates,
+        studentAnswerIds: currentElementFromStore.studentAnswerIds,
+      });
+    } else {
+      store.push({
+        questionId: question.id,
+        studentAnswerIds: bulkObject.studentAnswerIds,
+      });
+    }
+
     axios
       .post(guidedTestRoute + `/${params.testId}`, bulkObject, {
         headers: {
@@ -72,7 +103,14 @@ function StudentTakeGuidedTest() {
             navigate(`/student`);
           }, 5000);
         } else {
-          if (question.text === res.data.question.text) {
+          const isNewQuestionFromResponseFoundInStore = store.some(
+            (element) => {
+              if (element.questionId === res.data.question.id) return true;
+              return false;
+            }
+          );
+
+          if (isNewQuestionFromResponseFoundInStore) {
             handdleNextQuestionClick();
           }
 
@@ -110,7 +148,8 @@ function StudentTakeGuidedTest() {
         }
       )
       .then((res) => {
-        console.log("Res data: ", res.data);
+        // setStore([{ questionId: res.data.question.id, studentAnswerIds: [] }]);
+
         res.data.question.professorAnswers.forEach((answer) => {
           answer.isCorrect = false;
         });

@@ -48,6 +48,23 @@ function AllSubjectsStudent() {
         );
       },
     },
+    {
+      key: "6",
+      title: "KS Graph",
+      render: (record) => {
+        return (
+          <>
+            <button
+              onClick={() => {
+                handleKSGraphClick(record);
+              }}
+            >
+              KS Graph
+            </button>
+          </>
+        );
+      },
+    },
   ];
 
   useEffect(() => {
@@ -71,6 +88,9 @@ function AllSubjectsStudent() {
 
   const handleTestsClick = (record) => {
     navigate(`/student/subject/tests/${record.id}`);
+  };
+  const handleKSGraphClick = (record) => {
+    navigate(`/student/subject/ksGraph/${record.id}`);
   };
 
   return (

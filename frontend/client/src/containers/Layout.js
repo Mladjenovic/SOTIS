@@ -29,6 +29,7 @@ import AddNewSbuject from "../components/admin/AddNewSbuject";
 import Professor from "../pages/professor/Professor";
 import AllSubjectsProfessor from "../pages/professor/AllSubjectsProfessor";
 import ExampleGraph from "../pages/professor/ExampleGraph";
+import GraphCompare from "../pages/professor/GraphCompare";
 import AdminSubjectStudentsInfo from "../pages/admin/AdminSubjectStudentsInfo";
 import AdminAddNewStudent from "../pages/admin/AdminAddNewStudent";
 import AllTestsForSubjectProfessor from "../pages/professor/AllTestsForSubjectProfessor";
@@ -40,6 +41,7 @@ import AllSubjectsStudent from "../pages/student/AllSubjectsStudent";
 import AllTestsForSubjectStudent from "../pages/student/AllTestsForSubjectStudent";
 import StudentTakeTest from "../pages/student/StudentTakeTest";
 import StudentTakeGuidedTest from "../pages/student/StudentTakeGuidedTest";
+import StudentSubjectKsGraph from "../pages/student/StudentSubjectKsGraph";
 
 function CustomLayout() {
   const navigate = useNavigate();
@@ -186,6 +188,10 @@ function CustomLayout() {
                   element={<ExampleGraph />}
                 />
                 <Route
+                  path="/professor/subject/graphCompare/:subjectId"
+                  element={<GraphCompare />}
+                />
+                <Route
                   path="/professor/addNewTest/:subjectId"
                   element={<AddNewTestProfessor />}
                 />
@@ -206,6 +212,10 @@ function CustomLayout() {
                 <Route
                   path="/student/subject/tests/:subjectId"
                   element={<AllTestsForSubjectStudent />}
+                />
+                <Route
+                  path="/student/subject/ksGraph/:subjectId"
+                  element={<StudentSubjectKsGraph />}
                 />
                 <Route
                   path="/student/take/test/:testId"
