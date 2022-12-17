@@ -42,14 +42,14 @@ localforage.config({
 const flowKey = "example-flow";
 
 /*
-const initialNodes = [
-  { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 0 } },
-  { id: '2', data: { label: 'Node 2' }, position: { x: 150, y: 100 } },
-  { id: '3', data: { label: 'Node 2' }, position: { x: 250, y: 100 } },
-];
-
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
-*/
+  const initialNodes = [
+    { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 0 } },
+    { id: '2', data: { label: 'Node 2' }, position: { x: 150, y: 100 } },
+    { id: '3', data: { label: 'Node 2' }, position: { x: 250, y: 100 } },
+  ];
+  
+  const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+  */
 const onLoad = (reactFlowInstance) => {
   reactFlowInstance.fitView();
 };
@@ -68,7 +68,7 @@ const defaultEdgeOptions = {
 
 const getId = () => uuidv4();
 
-const ExampleGraph = () => {
+const StudentSubjectKsGraph = () => {
   const navigate = useNavigate();
   const params = useParams();
   const edgeUpdateSuccessful = useRef(true);
@@ -274,4 +274,4 @@ const ExampleGraph = () => {
   );
 };
 
-export default ExampleGraph;
+export default StudentSubjectKsGraph;
