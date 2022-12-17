@@ -60,14 +60,14 @@ namespace SOTIS_backend.DataAccess
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Surmise>()
-                    .HasOne(m => m.SourceProblem)
-                    .WithMany(t => t.SourceSurmises)
-                    .HasForeignKey(m => m.SourceProblemId);
+                .HasOne(m => m.SourceProblem)
+                .WithMany(t => t.SourceSurmises)
+                .HasForeignKey(m => m.SourceProblemId);
 
             modelBuilder.Entity<Surmise>()
-                        .HasOne(m => m.DestinationProblem)
-                        .WithMany(t => t.DestinationSurmises)
-                        .HasForeignKey(m => m.DestinationProblemId);
+                .HasOne(m => m.DestinationProblem)
+                .WithMany(t => t.DestinationSurmises)
+                .HasForeignKey(m => m.DestinationProblemId);
 
             modelBuilder.Entity<KnowledgeSpace>()
                 .HasMany(p => p.Surmises)
@@ -80,6 +80,16 @@ namespace SOTIS_backend.DataAccess
                 .WithOne(b => b.KnowledgeSpace)
                 .HasForeignKey(p => p.KnowledgeSpaceId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<KnowledgeStateProblem>()
+                .HasOne(ksp => ksp.Problem)
+                .WithMany(p => p.KnowledgeStateProblems)
+                .HasForeignKey(ksp => ksp.ProblemId);
+
+            modelBuilder.Entity<KnowledgeStateProblem>()
+                .HasOne(ksp => ksp.KnowledgeState)
+                .WithMany(ks => ks.KnowledgeStateProblems)
+                .HasForeignKey(ksp => ksp.KnowledgeStateId);
         }
     }
 }

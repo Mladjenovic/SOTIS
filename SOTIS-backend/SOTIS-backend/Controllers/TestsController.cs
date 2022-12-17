@@ -27,19 +27,23 @@ namespace SOTIS_backend.Controllers
 
         private readonly IKnowledgeSpacesRepository _knowledgeSpacesRepository;
 
+        private readonly IKnowledgeStateRepository _knowledgeStateRepository;
+
         public TestsController(
             IOptions<AppSettings> appSettings,
             IMapper mapper,
             ITestRepository testRepository,
             ISubjectRepository subjectRepository,
             IProblemRepository problemRepository,
-            IKnowledgeSpacesRepository knowledgeSpacesRepository)
+            IKnowledgeSpacesRepository knowledgeSpacesRepository,
+            IKnowledgeStateRepository knowledgeStateRepository)
             : base(appSettings, mapper)
         {
             _testRepository = testRepository;
             _subjectRepository = subjectRepository;
             _problemRepository = problemRepository;
             _knowledgeSpacesRepository = knowledgeSpacesRepository;
+            _knowledgeStateRepository = knowledgeStateRepository;
         }
 
         [HttpGet("professor/{subjectId}")]
@@ -94,6 +98,12 @@ namespace SOTIS_backend.Controllers
                 return BadRequest("Test with given id does not exists");
             }
 
+            if (frontendRequestDto.IsThresholdReached)
+            {
+                StoreKnowledgeState(frontendRequestDto.KnowledgeStates, GetSession().Id, test.SubjectId);
+                return Ok(new GuidedTestingFrontendResponseDto { IsFinalStateReached = true });
+            }
+
             GuidedTestingPythonRequestDto pythonRequestDto;
             if (frontendRequestDto.KnowledgeStates == null) 
             {
@@ -116,6 +126,12 @@ namespace SOTIS_backend.Controllers
 
             var pythonResponseDto = await HttpHelper.PostAsync<GuidedTestingPythonResponseDto>(AppSettings.StochasticMarkovUrl, pythonRequestDto);
 
+            if (pythonResponseDto.IsFinalStateReached)
+            {
+                StoreKnowledgeState(pythonResponseDto.KnowledgeStates, GetSession().Id, test.SubjectId);
+                return Ok(new GuidedTestingFrontendResponseDto { IsFinalStateReached = true });
+            }
+
             var testDto = Mapper.Map<TestDto>(test);
             var frontendResponseDto = new GuidedTestingFrontendResponseDto
             {
@@ -123,7 +139,7 @@ namespace SOTIS_backend.Controllers
                 IsFinalStateReached = pythonResponseDto.IsFinalStateReached,
                 Question = pythonResponseDto.IsFinalStateReached ? null : GetNextQuestion(testDto, pythonResponseDto.ProblemId)
             };
-            // todo: store knowledge state in database for that student
+
             return Ok(frontendResponseDto);
         }
 
@@ -217,6 +233,28 @@ namespace SOTIS_backend.Controllers
             return Ok();
         }
 
+        private void StoreKnowledgeState(IEnumerable<KnowledgeStateDto> knowledgeStates, string studentId, string subjectId)
+        {
+            var knowledgeStateDb = _knowledgeStateRepository.GetSingle(x => x.SubjectId == subjectId && x.StudentId == studentId);
+            if (knowledgeStateDb != null)
+            {
+                _knowledgeStateRepository.Delete(knowledgeStateDb);
+            }
+
+            var knowledgeStateDto = knowledgeStates.OrderByDescending(item => item.Probability).First();
+            _knowledgeStateRepository.Add(
+                new KnowledgeState
+                {
+                    StudentId = studentId,
+                    SubjectId = subjectId,
+                    KnowledgeStateProblems = knowledgeStateDto.ProblemIds.Select(x => new KnowledgeStateProblem
+                    {
+                        ProblemId = x
+                    })
+                });
+            _knowledgeStateRepository.Commit();
+        }
+
         private QuestionDto GetNextQuestion(TestDto test, string problemId)
         {
             var questions = test.Sections
@@ -240,7 +278,7 @@ namespace SOTIS_backend.Controllers
                 !incorrectAnswerIds.Any(x => frontendRequestDto.StudentAnswerIds.Contains(x));
         }
 
-        private async Task<IEnumerable<KnowledgeState>> GetInitialKnowledgeStatesAsync(string subjectId)
+        private async Task<IEnumerable<KnowledgeStateDto>> GetInitialKnowledgeStatesAsync(string subjectId)
         {
             var knowledgeSpace = _knowledgeSpacesRepository
                                         .FindByIncluding(x => x.SubjectId == subjectId, x => x.Surmises)
@@ -269,7 +307,7 @@ namespace SOTIS_backend.Controllers
                 number_of_problmes = problems.Count()
             });
 
-            var knowledgeStates = new List<KnowledgeState>();
+            var knowledgeStates = new List<KnowledgeStateDto>();
             foreach (var state in response.States)
             {
                 var problemIds = new List<string>();
@@ -282,7 +320,7 @@ namespace SOTIS_backend.Controllers
                     }
                 }
 
-                knowledgeStates.Add(new KnowledgeState
+                knowledgeStates.Add(new KnowledgeStateDto
                 {
                     ProblemIds = problemIds,
                     Probability = 1

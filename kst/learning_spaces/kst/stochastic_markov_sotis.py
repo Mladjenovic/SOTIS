@@ -18,6 +18,7 @@ def _likeliest_state(states: dict[Tuple[str], float]) -> Tuple[Tuple[str], float
     Returns likeliest state and its probability.
     :return: (state, probability)
     """
+    #return max(states.items(), key=operator.itemgetter(1))
     return random.choices(population=list(states.items()), weights=list(states.values()), k=1)[0]
 
 def questioning_rule(states: dict[Tuple[str], float]) -> str:
@@ -28,9 +29,13 @@ def questioning_rule(states: dict[Tuple[str], float]) -> str:
     if not np.isclose(1, sum(states.values()), atol=0.01):
         raise ValueError('Probabilities do not add up to 1!')
 
-    state, _ = _likeliest_state(states)
-    print('Chosen state:', state)
-    return random.choice(state)
+    for i in range(5):
+        state, _ = _likeliest_state(states)
+        if state == ():
+            continue
+        print('Chosen state:', state)
+        return random.choice(state)
+    return None
 
 def response_rule(question: str, states: dict[Tuple[str], float]) -> float:
     """
@@ -78,6 +83,8 @@ def stochastic_markov_sotis(states, threshold = 0.8, question=None, is_answer_co
         final_state_reached = False # prevent case when some of initial probabilities is greater than threshold 
     
     new_question = None if final_state_reached else questioning_rule(states)
+    if new_question == None:
+        final_state_reached = True # covers case when `questioning_rule` returns None
     print('Chosen state:', new_question)
     print('New states:', states)
     print('Final state reached:', final_state_reached)

@@ -233,6 +233,7 @@ namespace SOTIS_backend.Controllers
                     }
                 }
             }
+            // todo: put knowledge states into iita entries
 
             return iitaEntries;
         }

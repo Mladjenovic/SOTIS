@@ -80,7 +80,7 @@ def simulate_data():
                   request_body['delta'],
                   [tuple(imp) for imp in request_body['implications']])
 
-    simu_df = pd.DataFrame(result['dataset'], columns=['0', '1', '2', '3', '4', '5', '6'])
+    simu_df = pd.DataFrame(result['dataset'], columns=[str(i) for i in range(request_body['number_of_problems'])])
     response = iita_exclude_transitive(simu_df, v=1)
     return pd.Series(response).to_json(orient='index')
     

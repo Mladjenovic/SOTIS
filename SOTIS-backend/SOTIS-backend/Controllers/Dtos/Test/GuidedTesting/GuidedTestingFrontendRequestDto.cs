@@ -7,5 +7,7 @@ namespace SOTIS_backend.Controllers.Dtos.Test.GuidedTesting
         public QuestionDto Question { get; set; }
 
         public IEnumerable<string> StudentAnswerIds { get; set; }
+
+        public bool IsThresholdReached { get; set; }
     }
 }

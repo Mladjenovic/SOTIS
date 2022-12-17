@@ -1,28 +1,28 @@
 ﻿using SOTIS_backend.DataAccess.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SOTIS_backend.DataAccess.Models
 {
-    [Table("Problems")]
-    public class Problem : IEntityBase
+    [Table("KnowledgeStates")]
+    public class KnowledgeState : IEntityBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
-        public string Name { get; set; }
-
         public string SubjectId { get; set; }
 
         public Subject Subject { get; set; }
 
-        public IEnumerable<Surmise> SourceSurmises { get; set; }
+        public string StudentId { get; set; }
 
-        public IEnumerable<Surmise> DestinationSurmises { get; set; }
-
-        public IEnumerable<Question> Questions { get; set; }
+        public User Student { get; set; }
 
         public IEnumerable<KnowledgeStateProblem> KnowledgeStateProblems { get; set; }
     }

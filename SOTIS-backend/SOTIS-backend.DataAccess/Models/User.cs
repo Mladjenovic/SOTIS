@@ -25,5 +25,7 @@ namespace SOTIS_backend.DataAccess.Models
         public Role Role { get; set; }
 
         public IEnumerable<SubjectParticipant> SubjectParticipants { get; set; }  // applies only to student role
+
+        public IEnumerable<KnowledgeState> KnowledgeStates { get; set; }
     }
 }
