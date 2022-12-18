@@ -283,7 +283,22 @@ namespace SOTIS_backend.Controllers
                     }
                 }
             }
-            // todo: put knowledge states into iita entries
+
+            var knowledgeStates = _knowledgeStateRepository.FindByIncluding(x => x.SubjectId == subjectId, x => x.KnowledgeStateProblems);
+            foreach (var knowledgeState in knowledgeStates)
+            {
+                foreach (var item in problemIdToQuestionIds)
+                {
+                    if (knowledgeState.KnowledgeStateProblems.FirstOrDefault(x => x.ProblemId == item.ProblemId) != null)
+                    {
+                        iitaEntries[item.ProblemId].Add(1);
+                    }
+                    else
+                    {
+                        iitaEntries[item.ProblemId].Add(0);
+                    }
+                }
+            }
 
             return iitaEntries;
         }
