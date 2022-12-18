@@ -29,6 +29,10 @@ namespace SOTIS_backend.Controllers
 
         private readonly IKnowledgeStateRepository _knowledgeStateRepository;
 
+        private readonly IQuestionRepository _questionRepository;
+
+        private readonly IKnowledgeStateProblemsRepository _knowledgeStateProblemsRepository;
+
         public TestsController(
             IOptions<AppSettings> appSettings,
             IMapper mapper,
@@ -36,7 +40,9 @@ namespace SOTIS_backend.Controllers
             ISubjectRepository subjectRepository,
             IProblemRepository problemRepository,
             IKnowledgeSpacesRepository knowledgeSpacesRepository,
-            IKnowledgeStateRepository knowledgeStateRepository)
+            IKnowledgeStateRepository knowledgeStateRepository,
+            IQuestionRepository questionRepository,
+            IKnowledgeStateProblemsRepository knowledgeStateProblemsRepository)
             : base(appSettings, mapper)
         {
             _testRepository = testRepository;
@@ -44,6 +50,8 @@ namespace SOTIS_backend.Controllers
             _problemRepository = problemRepository;
             _knowledgeSpacesRepository = knowledgeSpacesRepository;
             _knowledgeStateRepository = knowledgeStateRepository;
+            _questionRepository = questionRepository;
+            _knowledgeStateProblemsRepository = knowledgeStateProblemsRepository;
         }
 
         [HttpGet("professor/{subjectId}")]
@@ -101,7 +109,7 @@ namespace SOTIS_backend.Controllers
             if (frontendRequestDto.IsThresholdReached)
             {
                 StoreKnowledgeState(frontendRequestDto.KnowledgeStates, GetSession().Id, test.SubjectId);
-                return Ok(new GuidedTestingFrontendResponseDto { IsFinalStateReached = true });
+                return Ok();
             }
 
             GuidedTestingPythonRequestDto pythonRequestDto;
@@ -166,7 +174,7 @@ namespace SOTIS_backend.Controllers
                     return BadRequest($"Problem with id {problemId} does not exist");
                 }
             }
-
+            
             var test = Mapper.Map<Test>(testCreateDto);
             var testDb = _testRepository.Add(test);
             _testRepository.Commit();
@@ -238,21 +246,37 @@ namespace SOTIS_backend.Controllers
             var knowledgeStateDb = _knowledgeStateRepository.GetSingle(x => x.SubjectId == subjectId && x.StudentId == studentId);
             if (knowledgeStateDb != null)
             {
+                var knowledgeStatesProblems = _knowledgeStateProblemsRepository.FindBy(x => x.KnowledgeStateId == knowledgeStateDb.Id);
+                if (knowledgeStatesProblems.Any())
+                {
+                    foreach (var knowledgeStateProblem in knowledgeStatesProblems)
+                    {
+                        _knowledgeStateProblemsRepository.Delete(knowledgeStateProblem);
+                    }
+                    _knowledgeStateProblemsRepository.Commit();
+                }
                 _knowledgeStateRepository.Delete(knowledgeStateDb);
+                _knowledgeStateRepository.Commit();
             }
 
             var knowledgeStateDto = knowledgeStates.OrderByDescending(item => item.Probability).First();
-            _knowledgeStateRepository.Add(
+            var knowledgeState = _knowledgeStateRepository.Add(
                 new KnowledgeState
                 {
                     StudentId = studentId,
-                    SubjectId = subjectId,
-                    KnowledgeStateProblems = knowledgeStateDto.ProblemIds.Select(x => new KnowledgeStateProblem
-                    {
-                        ProblemId = x
-                    })
+                    SubjectId = subjectId
                 });
             _knowledgeStateRepository.Commit();
+            
+            foreach (var problemId in knowledgeStateDto.ProblemIds)
+            {
+                _knowledgeStateProblemsRepository.Add(new KnowledgeStateProblem
+                {
+                    ProblemId = problemId,
+                    KnowledgeStateId = knowledgeState.Id
+                });
+            }
+            _knowledgeStateProblemsRepository.Commit();
         }
 
         private QuestionDto GetNextQuestion(TestDto test, string problemId)
@@ -267,10 +291,11 @@ namespace SOTIS_backend.Controllers
             return questions[randIndex];
         }
 
-        private static bool CalculateIsAnswerCorrect(GuidedTestingFrontendRequestDto frontendRequestDto)
+        private bool CalculateIsAnswerCorrect(GuidedTestingFrontendRequestDto frontendRequestDto)
         {
-            var correctAnswerIds = frontendRequestDto.Question.ProfessorAnswers.Where(x => x.IsCorrect).Select(x => x.Id).ToList();
-            var incorrectAnswerIds = frontendRequestDto.Question.ProfessorAnswers.Where(x => !x.IsCorrect).Select(x => x.Id).ToList();
+            var question = _questionRepository.GetSingle(x => x.Id == frontendRequestDto.Question.Id, x => x.ProfessorAnswers);
+            var correctAnswerIds = question.ProfessorAnswers.Where(x => x.IsCorrect).Select(x => x.Id).ToList();
+            var incorrectAnswerIds = question.ProfessorAnswers.Where(x => !x.IsCorrect).Select(x => x.Id).ToList();
 
             // answer is correct if ALL correct answers are selected
             // and NONE of the incorrect answers are selected

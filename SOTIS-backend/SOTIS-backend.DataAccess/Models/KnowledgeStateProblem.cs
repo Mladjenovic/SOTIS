@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SOTIS_backend.DataAccess.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SOTIS_backend.DataAccess.Models
 {
     [Table("KnowledgeStateProblems")]
-    public class KnowledgeStateProblem
+    public class KnowledgeStateProblem : IEntityBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
