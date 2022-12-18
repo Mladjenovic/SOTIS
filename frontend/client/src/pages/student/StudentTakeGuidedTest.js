@@ -27,8 +27,7 @@ function StudentTakeGuidedTest() {
   const [nextBtnShow, setNextBtnShow] = useState(true);
   const [bulkObject, setBulkObject] = useState({});
   const [store, setStore] = useState([]); //combination of questionId & studentAnswerIds
-  const [threshouldCnt, setThreshouldCnt] = useState(0); // when we send the same question to backend 10 times, then the threshold is reached
-  const [isThresholdReached, setIsTresholdReached] = useState(false); // Threshould is reached when threshouldCnt reached to 10
+  //const [thresholdCnt, setThresholdCnt] = useState(0); // when we send the same question to backend 10 times, then the threshold is reached
 
   let timer;
 
@@ -42,7 +41,7 @@ function StudentTakeGuidedTest() {
     }, [1000]);
   };
 
-  const handleAnswerIsCorrectChange = (questionIndex, answerIndex, event) => {
+  const handleAnswerIsSelectedChange = (questionIndex, answerIndex, event) => {
     let data = question;
     data.professorAnswers[answerIndex][event.target.name] =
       document.querySelector(`.answer_${questionIndex}_${answerIndex}`).checked;
@@ -50,46 +49,66 @@ function StudentTakeGuidedTest() {
     setQuestion(data);
   };
 
-  const handdleNextQuestionClick = () => {
+  async function handleNextQuestionClick() {
+    let studentAnswerIds = [];
+
+    // populate studentAnswerIds (question need to be updated with fresh data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!) delete this when it is ensured
     question.professorAnswers.forEach((answer) => {
-      if (
-        answer.isCorrect &&
-        !bulkObject.studentAnswerIds.includes(answer.id)
-      ) {
-        bulkObject.studentAnswerIds.push(answer.id);
+      if (answer.isSelected) {
+        studentAnswerIds.push(answer.id);
       }
     });
-
-    const isFoundinStore = store.some((element) => {
-      if (element.questionId === question.id) return true;
-      return false;
-    });
-    const currentElementFromStore = store.some((element) => {
-      if (element.questionId === question.id) return element;
+    // store quesiton and studentAnswerIds
+    store.push({
+      questionId: question.id,
+      studentAnswerIds: studentAnswerIds,
     });
 
-    if (isFoundinStore) {
-      if (threshouldCnt >= 10) {
-        alert("Test is finished, sending isThresholdReached flag");
-        // TODO
-        // Send actual threshold flag
+    // update bulk object (need to be updated with fresh data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!) delete this when it is ensured
+    bulkObject.studentAnswerIds = studentAnswerIds;
+
+    let thresholdCnt = 0;
+    let shouldRepeatRestCalls = true;
+    while (shouldRepeatRestCalls)
+    {
+      let response_data = await getNextQuestion(bulkObject);
+      if (isNewQuestionFromResponseFoundInStore(response_data.question.id)) {
+        thresholdCnt += 1; //////////////////////////////////////////////////////////////////////////// question repeated
+        if (thresholdCnt > 10) {
+          bulkObject.isThresholdReached = true;
+          await getNextQuestion(bulkObject);
+        }
+      } else {
+
+        initializeStates(response_data);
+        shouldRepeatRestCalls = false;
       }
-      console.log(`Question ${question.id} is already in store`);
-      setThreshouldCnt(threshouldCnt + 1);
-      setBulkObject({
-        question: bulkObject.question,
-        knowledgeStates: bulkObject.knowledgeStates,
-        studentAnswerIds: currentElementFromStore.studentAnswerIds,
-      });
-    } else {
-      store.push({
-        questionId: question.id,
-        studentAnswerIds: bulkObject.studentAnswerIds,
-      });
     }
+  };
 
-    axios
-      .post(guidedTestRoute + `/${params.testId}`, bulkObject, {
+  function isNewQuestionFromResponseFoundInStore(questionId) {
+    return store.some(element =>  element.questionId === questionId);
+  }
+
+  function initializeStates(response_data) {
+    response_data.question.professorAnswers.forEach((answer) => {
+      answer.isSelected = false;
+    });
+
+    setQuestion(response_data.question);
+    
+    let obj = {
+      question: response_data.question,
+      knowledgeStates: response_data.knowledgeStates,
+      studentAnswerIds: [],
+    };
+    setBulkObject(obj);
+  }
+
+  function getNextQuestion(request_body) {
+    return new Promise(function (resolve, reject) {
+      axios
+      .post(guidedTestRoute + `/${params.testId}`, request_body, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
             JSON.stringify(localStorage.getItem("access-token"))
@@ -97,42 +116,22 @@ function StudentTakeGuidedTest() {
         },
       })
       .then((res) => {
-        if (res.data.isFinalStateReached == true) {
+        if (res.data.isFinalStateReached == true) {  ////////////////////////////////////////////////////// isFinalStateReached
           toast.info("Guided test is finished✅");
           setTimeout(() => {
             navigate(`/student`);
           }, 5000);
         } else {
-          const isNewQuestionFromResponseFoundInStore = store.some(
-            (element) => {
-              if (element.questionId === res.data.question.id) return true;
-              return false;
-            }
-          );
-
-          if (isNewQuestionFromResponseFoundInStore) {
-            handdleNextQuestionClick();
-          }
-
-          res.data.question.professorAnswers.forEach((answer) => {
-            answer.isCorrect = false;
-          });
-
-          setQuestion(res.data.question);
-          setBulkObject({
-            question: res.data.question,
-            knowledgeStates: res.data.knowledgeStates,
-            studentAnswerIds: [],
-          });
-
-          setIsLoading(false);
+          resolve(res.data)
         }
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(error.message, toastOptions);
-      });
-  };
+      },
+        (error) => {
+        reject(error);
+      }
+      );
+    });
+  }
+
 
   useEffect(() => {
     axios
@@ -148,23 +147,7 @@ function StudentTakeGuidedTest() {
         }
       )
       .then((res) => {
-        // setStore([{ questionId: res.data.question.id, studentAnswerIds: [] }]);
-
-        res.data.question.professorAnswers.forEach((answer) => {
-          answer.isCorrect = false;
-        });
-
-        setQuestion(res.data.question);
-        var obj = {
-          question: res.data.question,
-          knowledgeStates: res.data.knowledgeStates,
-          studentAnswerIds: [],
-        };
-        console.log("Bulk object: ", obj);
-
-        setBulkObject(obj);
-
-        startTimer();
+        initializeStates(res.data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -212,12 +195,12 @@ function StudentTakeGuidedTest() {
                       <div>
                         <Input
                           type="checkbox"
-                          name="isCorrect"
-                          value={item.isCorrect}
+                          name="isSelected"
+                          value={item.isSelected}
                           style={{ marginLeft: "10px" }}
                           className={`answer_${question.id}_${index}`}
                           onChange={(event) =>
-                            handleAnswerIsCorrectChange(
+                            handleAnswerIsSelectedChange(
                               question.id,
                               index,
                               event
@@ -236,7 +219,7 @@ function StudentTakeGuidedTest() {
                   <Button
                     ref={ref}
                     style={{ margin: "2%" }}
-                    onClick={handdleNextQuestionClick}
+                    onClick={handleNextQuestionClick}
                   >
                     Next Question
                   </Button>

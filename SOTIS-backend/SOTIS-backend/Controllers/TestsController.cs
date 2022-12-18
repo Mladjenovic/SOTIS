@@ -109,7 +109,7 @@ namespace SOTIS_backend.Controllers
             if (frontendRequestDto.IsThresholdReached)
             {
                 StoreKnowledgeState(frontendRequestDto.KnowledgeStates, GetSession().Id, test.SubjectId);
-                return Ok();
+                return Ok(new GuidedTestingFrontendResponseDto { IsFinalStateReached = true });
             }
 
             GuidedTestingPythonRequestDto pythonRequestDto;
@@ -267,7 +267,7 @@ namespace SOTIS_backend.Controllers
                     SubjectId = subjectId
                 });
             _knowledgeStateRepository.Commit();
-            
+
             foreach (var problemId in knowledgeStateDto.ProblemIds)
             {
                 _knowledgeStateProblemsRepository.Add(new KnowledgeStateProblem
