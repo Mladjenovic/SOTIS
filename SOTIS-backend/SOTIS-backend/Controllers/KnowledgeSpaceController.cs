@@ -27,19 +27,23 @@ namespace SOTIS_backend.Controllers
 
         private readonly ITestResultRepository _testResultRepository;
 
+        private readonly IKnowledgeStateRepository _knowledgeStateRepository;
+
         public KnowledgeSpaceController(
             IOptions<AppSettings> appSettings,
             IMapper mapper,
             ISubjectRepository subjectRepository,
             IProblemRepository problemRepository,
             IKnowledgeSpacesRepository knowledgeSpacesRepository,
-            ITestResultRepository testResultRepository)
+            ITestResultRepository testResultRepository,
+            IKnowledgeStateRepository knowledgeStateRepository)
             : base(appSettings, mapper)
         {
             _subjectRepository = subjectRepository;
             _problemRepository = problemRepository;
             _knowledgeSpacesRepository = knowledgeSpacesRepository;
             _testResultRepository = testResultRepository;
+            _knowledgeStateRepository = knowledgeStateRepository;
         }
 
         [HttpPut("expected")]
@@ -97,6 +101,52 @@ namespace SOTIS_backend.Controllers
 
             knowledgeSpace = _knowledgeSpacesRepository.GetSingle(x => x.Id == knowledgeSpace.Id, x => x.Surmises, x => x.NodeDetails); // retrieve dependent entities
             var response = CreateKSdto(knowledgeSpace);
+
+            return Ok(response);
+        }
+
+        [HttpGet("{subjectId}/student")]
+        [AuthorizationFilter(Role.Student)]
+        public IActionResult GetStudentKnowledgeSpace([FromRoute] string subjectId)
+        {
+            var subject = _subjectRepository.GetSingle(x => x.Id == subjectId, x => x.KnowledgeSpaces);
+            if (subject == null)
+            {
+                return BadRequest("Subject does not exist for given id");
+            }
+
+            var expectedKnowledgeSpace = _knowledgeSpacesRepository.GetSingle(x => x.SubjectId == subjectId && x.KnowledgeSpaceType == KnowledgeSpaceType.Real, x => x.Surmises, x => x.NodeDetails);
+
+            if (expectedKnowledgeSpace == null)
+            {
+                return BadRequest("Expected knowledge space does not exist for subject with given id");
+            }
+
+            var studentId = GetSession().Id;
+            var knowledgeState = _knowledgeStateRepository.GetSingle(x => x.SubjectId == subjectId && x.StudentId == studentId, x => x.KnowledgeStateProblems);
+            if (knowledgeState == null) 
+            {
+                return BadRequest("Knowledge state does not exist for student and subject with given id");
+            }
+            var studentKnownProblems = knowledgeState.KnowledgeStateProblems.Select(x => x.ProblemId);
+
+            var studentSurmises = new List<Surmise>();
+            foreach (var surmise in expectedKnowledgeSpace.Surmises)
+            {
+                if (studentKnownProblems.Contains(surmise.SourceProblemId) && 
+                    studentKnownProblems.Contains(surmise.DestinationProblemId))
+                {
+                    studentSurmises.Add(surmise);
+                }
+            }
+
+            var studentKnowledgeSpace = new KnowledgeSpace
+            {
+                SubjectId = subjectId,
+                NodeDetails = expectedKnowledgeSpace.NodeDetails.Where(x => studentKnownProblems.Contains(x.ProblemId)),
+                Surmises = studentSurmises
+            };
+            var response = CreateKSdto(studentKnowledgeSpace);
 
             return Ok(response);
         }
