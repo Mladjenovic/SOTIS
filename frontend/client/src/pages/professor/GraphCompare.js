@@ -7,29 +7,21 @@ import React, {
 } from "react";
 import { Button, Row, Col } from "antd";
 import axios from "axios";
-import {
-  getKnowledgeSpaceRoute,
-  createKnowledgeSpaceRoute,
-} from "../../utils/APIRoutes";
+import { getKnowledgeSpaceRoute } from "../../utils/APIRoutes";
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
   updateEdge,
-  addNode,
-  getConnectedEdges,
   Background,
-  Controls,
-  MiniMap,
   MarkerType,
   applyNodeChanges,
   applyEdgeChanges,
   useNodesState,
   useEdgesState,
 } from "react-flow-renderer";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import CustomEdge from "../../components/professor/CustomEdge";
-import Sidebar from "../../components/professor/Sidebar";
 
 import { v4 as uuidv4 } from "uuid";
 import localforage from "localforage";
@@ -38,21 +30,6 @@ localforage.config({
   name: "react-flow-docs",
   storeName: "flows",
 });
-
-const flowKey = "example-flow";
-
-/*
-  const initialNodes = [
-    { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 0 } },
-    { id: '2', data: { label: 'Node 2' }, position: { x: 150, y: 100 } },
-    { id: '3', data: { label: 'Node 2' }, position: { x: 250, y: 100 } },
-  ];
-  
-  const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
-  */
-const onLoad = (reactFlowInstance) => {
-  reactFlowInstance.fitView();
-};
 
 const edgeTypes = {
   custom: CustomEdge,
@@ -69,18 +46,21 @@ const defaultEdgeOptions = {
 const getId = () => uuidv4();
 
 const GraphCompare = () => {
-  const navigate = useNavigate();
   const params = useParams();
   const edgeUpdateSuccessful = useRef(true);
+  const edgeUpdateSuccessfulReal = useRef(true);
   const reactFlowWrapper = useRef(null);
-  const [rfInstance, setRfInstance] = useState(null);
+  const reactFlowWrapperReal = useRef(null);
   const [nodes, setNodes] = useNodesState([]);
   const [edges, setEdges] = useEdgesState([]);
-  const [name, setName] = useState("");
+  const [realNodes, setRealNodes] = useNodesState([]);
+  const [realEdges, setRealEdges] = useEdgesState([]);
+
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const [shouldDelete, setShouldDelete] = useState(false);
+  const [reactFlowInstanceReal, setReactFlowInstanceReal] = useState(null);
 
   useEffect(() => {
+    //Get expected KS graph
     axios
       .get(`${getKnowledgeSpaceRoute}/${params.subjectId}/expected`, {
         headers: {
@@ -90,7 +70,7 @@ const GraphCompare = () => {
         },
       })
       .then((res) => {
-        console.log(res);
+        console.log("Expected: ", res);
         setNodes(res.data.nodes);
         setEdges(res.data.edges);
       })
@@ -98,36 +78,35 @@ const GraphCompare = () => {
         console.error(error);
         toast.error(error.message, toastOptions);
       });
-  }, []);
 
-  const saveGraph = () => {
+    // Get real KS graph
     axios
-      .put(
-        createKnowledgeSpaceRoute,
-        {
-          subjectId: params.subjectId,
-          nodes: nodes,
-          edges: edges,
+      .get(`${getKnowledgeSpaceRoute}/${params.subjectId}/real`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(
+            JSON.stringify(localStorage.getItem("access-token"))
+          )}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(
-              JSON.stringify(localStorage.getItem("access-token"))
-            )}`,
-          },
-        }
-      )
+      })
       .then((res) => {
-        console.log(res.data);
+        console.log(console.log("Real: ", res));
+        setRealNodes(res.data.nodes);
+        setRealEdges(res.data.edges);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
+        toast.error(error.message, toastOptions);
       });
-  };
+  }, []);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
+  );
+
+  const onConnectReal = useCallback(
+    (params) => setRealEdges((eds) => addEdge(params, eds)),
+    [setRealEdges]
   );
 
   const onDragOver = useCallback((event) => {
@@ -161,14 +140,47 @@ const GraphCompare = () => {
     },
     [reactFlowInstance]
   );
+  const onDropReal = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const type = event.dataTransfer.getData("application/reactflow");
+
+      // check if the dropped element is valid
+      if (typeof type === "undefined" || !type) {
+        return;
+      }
+
+      const position = reactFlowInstanceReal.project({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      });
+      const newNode = {
+        id: getId(),
+        position,
+        data: { label: type },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [reactFlowInstanceReal]
+  );
 
   const onEdgeUpdateStart = useCallback(() => {
     edgeUpdateSuccessful.current = false;
+  }, []);
+  const onEdgeUpdateStartReal = useCallback(() => {
+    edgeUpdateSuccessfulReal.current = false;
   }, []);
 
   const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
     edgeUpdateSuccessful.current = true;
     setEdges((els) => updateEdge(oldEdge, newConnection, els));
+  }, []);
+  const onEdgeUpdateReal = useCallback((oldEdge, newConnection) => {
+    edgeUpdateSuccessfulReal.current = true;
+    setRealEdges((els) => updateEdge(oldEdge, newConnection, els));
   }, []);
 
   const onEdgeUpdateEnd = useCallback((_, edge) => {
@@ -178,23 +190,30 @@ const GraphCompare = () => {
 
     edgeUpdateSuccessful.current = true;
   }, []);
+  const onEdgeUpdateEndReal = useCallback((_, edge) => {
+    if (!edgeUpdateSuccessfulReal.current) {
+      setRealEdges((eds) => eds.filter((e) => e.id !== edge.id));
+    }
+
+    edgeUpdateSuccessful.current = true;
+  }, []);
 
   const onNodesChange = useCallback(
     (changes) => setNodes((ns) => applyNodeChanges(changes, ns)),
+    []
+  );
+  const onNodesChangeReal = useCallback(
+    (changes) => setRealNodes((ns) => applyNodeChanges(changes, ns)),
     []
   );
   const onEdgesChange = useCallback(
     (changes) => setEdges((es) => applyEdgeChanges(changes, es)),
     []
   );
-
-  const deleteNodeById = (id) => {
-    setNodes((nds) => nds.filter((node) => node.id !== id));
-  };
-
-  const deleteEdgeById = (id) => {
-    setEdges((eds) => eds.filter((edge) => edge.id !== id));
-  };
+  const onEdgesChangeReal = useCallback(
+    (changes) => setRealEdges((es) => applyEdgeChanges(changes, es)),
+    []
+  );
 
   return (
     <Row>
@@ -210,7 +229,6 @@ const GraphCompare = () => {
                     onInit={setReactFlowInstance}
                     onDrop={onDrop}
                     onDragOver={onDragOver}
-                    //onLoad={setRfInstance}
                     style={{
                       width: "100%",
                       height: "80vh",
@@ -226,7 +244,6 @@ const GraphCompare = () => {
                     onEdgesChange={onEdgesChange}
                     deleteKeyCode={46}
                     selectionKeyCode={17}
-                    //onNodeDragStop={onNodeDragStop}
                     edgeTypes={edgeTypes}
                     onEdgeUpdate={onEdgeUpdate}
                     onEdgeUpdateStart={onEdgeUpdateStart}
@@ -245,36 +262,34 @@ const GraphCompare = () => {
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div style={{ width: "100%" }}>
               <ReactFlowProvider>
-                <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+                <div className="reactflow-wrapper" ref={reactFlowWrapperReal}>
                   <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    onInit={setReactFlowInstance}
-                    onDrop={onDrop}
+                    nodes={realNodes}
+                    edges={realEdges}
+                    onInit={setReactFlowInstanceReal}
+                    onDrop={onDropReal}
                     onDragOver={onDragOver}
-                    //onLoad={setRfInstance}
                     style={{
                       width: "100%",
                       height: "80vh",
                       border: "1px solid #16001E",
                     }}
-                    onConnect={onConnect}
+                    onConnect={onConnectReal}
                     connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
                     connectionLineType="bezier"
                     defaultEdgeOptions={defaultEdgeOptions}
                     snapToGrid={true}
                     snapGrid={[16, 16]}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
+                    onNodesChange={onNodesChangeReal}
+                    onEdgesChange={onEdgesChangeReal}
                     deleteKeyCode={46}
                     selectionKeyCode={17}
-                    //onNodeDragStop={onNodeDragStop}
                     edgeTypes={edgeTypes}
-                    onEdgeUpdate={onEdgeUpdate}
-                    onEdgeUpdateStart={onEdgeUpdateStart}
-                    onEdgeUpdateEnd={onEdgeUpdateEnd}
+                    onEdgeUpdate={onEdgeUpdateReal}
+                    onEdgeUpdateStart={onEdgeUpdateStartReal}
+                    onEdgeUpdateEnd={onEdgeUpdateEndReal}
                   >
-                    <Background color="#888" gap={16} />
+                    <Background color="#888" gap={32} />
                   </ReactFlow>
                 </div>
               </ReactFlowProvider>
