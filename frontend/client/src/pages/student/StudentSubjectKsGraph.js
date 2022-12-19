@@ -5,21 +5,15 @@ import React, {
   useCallback,
   Fragment,
 } from "react";
-import { Button } from "antd";
 import axios from "axios";
-import {
-  getKnowledgeSpaceRoute,
-  createKnowledgeSpaceRoute,
-} from "../../utils/APIRoutes";
+import { knogledgeSpacesRoute } from "../../utils/APIRoutes";
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
   updateEdge,
-  addNode,
   getConnectedEdges,
   Background,
   Controls,
-  MiniMap,
   MarkerType,
   applyNodeChanges,
   applyEdgeChanges,
@@ -27,9 +21,10 @@ import ReactFlow, {
   useEdgesState,
 } from "react-flow-renderer";
 import { useNavigate, useParams } from "react-router-dom";
+import { toastOptions } from "../../utils/constants";
+import { ToastContainer, toast } from "react-toastify";
 
 import CustomEdge from "../../components/professor/CustomEdge";
-import Sidebar from "../../components/professor/Sidebar";
 
 import { v4 as uuidv4 } from "uuid";
 import localforage from "localforage";
@@ -38,21 +33,6 @@ localforage.config({
   name: "react-flow-docs",
   storeName: "flows",
 });
-
-const flowKey = "example-flow";
-
-/*
-  const initialNodes = [
-    { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 0 } },
-    { id: '2', data: { label: 'Node 2' }, position: { x: 150, y: 100 } },
-    { id: '3', data: { label: 'Node 2' }, position: { x: 250, y: 100 } },
-  ];
-  
-  const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
-  */
-const onLoad = (reactFlowInstance) => {
-  reactFlowInstance.fitView();
-};
 
 const edgeTypes = {
   custom: CustomEdge,
@@ -82,7 +62,7 @@ const StudentSubjectKsGraph = () => {
 
   useEffect(() => {
     axios
-      .get(`${getKnowledgeSpaceRoute}/${params.subjectId}/expected`, {
+      .get(`${knogledgeSpacesRoute}/${params.subjectId}/student`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
             JSON.stringify(localStorage.getItem("access-token"))
@@ -96,34 +76,19 @@ const StudentSubjectKsGraph = () => {
       })
       .catch((error) => {
         console.error(error);
-        toast.error(error.message, toastOptions);
+        if (error.response.status === 400) {
+          toast.error(
+            "Real knowledge state doesn't exist for this student!",
+            toastOptions
+          );
+          setTimeout(() => {
+            navigate("/student");
+          }, 5000);
+        } else {
+          toast.error(error.message, toastOptions);
+        }
       });
   }, []);
-
-  const saveGraph = () => {
-    axios
-      .put(
-        createKnowledgeSpaceRoute,
-        {
-          subjectId: params.subjectId,
-          nodes: nodes,
-          edges: edges,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(
-              JSON.stringify(localStorage.getItem("access-token"))
-            )}`,
-          },
-        }
-      )
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -207,7 +172,7 @@ const StudentSubjectKsGraph = () => {
   return (
     <Fragment>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={{ width: "90%" }}>
+        <div style={{ width: "100%" }}>
           <ReactFlowProvider>
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
               <ReactFlow
@@ -241,35 +206,12 @@ const StudentSubjectKsGraph = () => {
               >
                 <Background color="#888" gap={16} />
                 <Controls />
-                <div
-                  style={{ position: "absolute", left: 10, top: 10, zIndex: 4 }}
-                >
-                  <div>
-                    <label htmlFor="shouldDelete">
-                      delete nodes on click
-                      <input
-                        id="shouldDelete"
-                        type="checkbox"
-                        checked={shouldDelete}
-                        onChange={(event) =>
-                          setShouldDelete(event.target.checked)
-                        }
-                        className="react-flow__ishidden"
-                      />
-                    </label>
-                  </div>
-                </div>
               </ReactFlow>
             </div>
           </ReactFlowProvider>
         </div>
-        <div style={{ overflow: "auto", marginLeft: "1rem" }}>
-          <Sidebar subjectId={params.subjectId} />
-          <Button onClick={saveGraph} style={{ borderRadius: "1rem" }}>
-            Save
-          </Button>
-        </div>
       </div>
+      <ToastContainer></ToastContainer>
     </Fragment>
   );
 };

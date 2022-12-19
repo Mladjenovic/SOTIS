@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getAllSubjectsRoute } from "../../utils/APIRoutes";
+import {
+  getAllSubjectsRoute,
+  knogledgeSpacesRoute,
+} from "../../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
 import loader from "../../assets/loader.gif";
 
-import { Button, Table, Modal, Input } from "antd";
+import { Table } from "antd";
 
 function AllSubjectsProfessor() {
   const [isLoading, setIsLoading] = useState(true);
@@ -100,6 +103,24 @@ function AllSubjectsProfessor() {
         );
       },
     },
+    {
+      key: "8",
+      title: "Simu call",
+      render: (record) => {
+        return (
+          <>
+            <button
+              onClick={() => {
+                handleSimuCallClick(record);
+              }}
+            >
+              {" "}
+              simu
+            </button>
+          </>
+        );
+      },
+    },
   ];
 
   useEffect(() => {
@@ -131,6 +152,27 @@ function AllSubjectsProfessor() {
   };
   const handleCompareGraphsClick = (record) => {
     navigate(`/professor/subject/graphCompare/${record.id}`);
+  };
+
+  const handleSimuCallClick = (record) => {
+    axios
+      .put(
+        knogledgeSpacesRoute + `/${record.id}` + "/real/simu",
+        {}, // axios wants this to be empty, cause it's a put req and you are supposed to send actual data to be...
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(
+              JSON.stringify(localStorage.getItem("access-token"))
+            )}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (

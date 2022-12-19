@@ -21,6 +21,7 @@ export const createTestRoute = `${host}/api/Tests`;
 export const guidedTestRoute = `${host}/api/Tests/guidedTest`;
 
 export const getKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace`;
+export const knogledgeSpacesRoute = `${host}/api/KnowledgeSpace`;
 export const createKnowledgeSpaceRoute = `${host}/api/KnowledgeSpace/expected`;
 
 export const getAllSubjectsForStudentRoute = `${host}/api/Subjects/student`;
