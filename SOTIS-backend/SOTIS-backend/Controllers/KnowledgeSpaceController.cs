@@ -115,11 +115,11 @@ namespace SOTIS_backend.Controllers
                 return BadRequest("Subject does not exist for given id");
             }
 
-            var expectedKnowledgeSpace = _knowledgeSpacesRepository.GetSingle(x => x.SubjectId == subjectId && x.KnowledgeSpaceType == KnowledgeSpaceType.Real, x => x.Surmises, x => x.NodeDetails);
+            var realKnowledgeSpace = _knowledgeSpacesRepository.GetSingle(x => x.SubjectId == subjectId && x.KnowledgeSpaceType == KnowledgeSpaceType.Real, x => x.Surmises, x => x.NodeDetails);
 
-            if (expectedKnowledgeSpace == null)
+            if (realKnowledgeSpace == null)
             {
-                return BadRequest("Expected knowledge space does not exist for subject with given id");
+                return BadRequest("Real knowledge space does not exist for subject with given id");
             }
 
             var studentId = GetSession().Id;
@@ -131,7 +131,7 @@ namespace SOTIS_backend.Controllers
             var studentKnownProblems = knowledgeState.KnowledgeStateProblems.Select(x => x.ProblemId);
 
             var studentSurmises = new List<Surmise>();
-            foreach (var surmise in expectedKnowledgeSpace.Surmises)
+            foreach (var surmise in realKnowledgeSpace.Surmises)
             {
                 if (studentKnownProblems.Contains(surmise.SourceProblemId) && 
                     studentKnownProblems.Contains(surmise.DestinationProblemId))
@@ -143,7 +143,7 @@ namespace SOTIS_backend.Controllers
             var studentKnowledgeSpace = new KnowledgeSpace
             {
                 SubjectId = subjectId,
-                NodeDetails = expectedKnowledgeSpace.NodeDetails.Where(x => studentKnownProblems.Contains(x.ProblemId)),
+                NodeDetails = realKnowledgeSpace.NodeDetails.Where(x => studentKnownProblems.Contains(x.ProblemId)),
                 Surmises = studentSurmises
             };
             var response = CreateKSdto(studentKnowledgeSpace);

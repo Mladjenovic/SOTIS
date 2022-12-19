@@ -52,7 +52,7 @@ function StudentTakeGuidedTest() {
   async function handleNextQuestionClick() {
     let studentAnswerIds = [];
 
-    // populate studentAnswerIds (question need to be updated with fresh data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!) delete this when it is ensured
+    // populate studentAnswerIds
     question.professorAnswers.forEach((answer) => {
       if (answer.isSelected) {
         studentAnswerIds.push(answer.id);
@@ -64,7 +64,7 @@ function StudentTakeGuidedTest() {
       studentAnswerIds: studentAnswerIds,
     });
 
-    // update bulk object (need to be updated with fresh data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!) delete this when it is ensured
+    // update bulk object
     bulkObject.studentAnswerIds = studentAnswerIds;
 
     let thresholdCnt = 0;
@@ -73,7 +73,7 @@ function StudentTakeGuidedTest() {
     {
       let response_data = await getNextQuestion(bulkObject);
       if (isNewQuestionFromResponseFoundInStore(response_data.question.id)) {
-        thresholdCnt += 1; //////////////////////////////////////////////////////////////////////////// question repeated
+        thresholdCnt += 1; // question repeated
         if (thresholdCnt > 10) {
           bulkObject.isThresholdReached = true;
           await getNextQuestion(bulkObject);
@@ -116,7 +116,7 @@ function StudentTakeGuidedTest() {
         },
       })
       .then((res) => {
-        if (res.data.isFinalStateReached == true) {  ////////////////////////////////////////////////////// isFinalStateReached
+        if (res.data.isFinalStateReached == true) {  // isFinalStateReached
           toast.info("Guided test is finished✅");
           setTimeout(() => {
             navigate(`/student`);
