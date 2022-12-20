@@ -310,7 +310,7 @@ namespace SOTIS_backend.Controllers
             var nodeDetails = new List<NodeDetails>();
             foreach (var node in knowledgeSpaceDto.Nodes)
             {
-                var problem = _problemRepository.GetSingle(x => x.Name == node.Data.Label);
+                var problem = _problemRepository.GetSingle(x => x.Name == node.Data.Label && x.SubjectId == subject.Id);
                 if (problem == null)
                 {
                     throw new ValidationException($"Problem with name {node.Data.Label} does not exist");
