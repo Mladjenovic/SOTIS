@@ -51,13 +51,21 @@ const GraphCompare = () => {
   const edgeUpdateSuccessfulReal = useRef(true);
   const reactFlowWrapper = useRef(null);
   const reactFlowWrapperReal = useRef(null);
+  const reactFlowWrapperDiff = useRef(null);
   const [nodes, setNodes] = useNodesState([]);
   const [edges, setEdges] = useEdgesState([]);
   const [realNodes, setRealNodes] = useNodesState([]);
   const [realEdges, setRealEdges] = useEdgesState([]);
+  
+
+  let diffNodes = [];
+  let diffEdges = [];
+  let realDi = [];
+  let di = [];
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [reactFlowInstanceReal, setReactFlowInstanceReal] = useState(null);
+  const [reactFlowInstanceDiff, setReactFlowInstanceDiff] = useState(null);
 
   useEffect(() => {
     //Get expected KS graph
@@ -99,6 +107,46 @@ const GraphCompare = () => {
       });
   }, []);
 
+  // funkcija koja pravi random id 
+  let guid = () => {
+    let s4 = () => {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    //return id of format 'aaaaaaaa'-'aaaa'-'aaaa'-'aaaa'-'aaaaaaaaaaaa'
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+  }
+
+  //poredi
+  function poredi(){
+    nodes.forEach((x) => {
+      diffNodes.push(x)
+    })
+    //izvucene vrednosti kao dict(JSON) pa ga castuje u str pa pakuje u skupove
+    edges.forEach((x) => {
+      di.push(JSON.stringify({"source": x["source"], "target": x["target"]}))
+    })
+    realEdges.forEach((x) => {
+      realDi.push(JSON.stringify({"source": x["source"], "target": x["target"]}))
+    })
+
+    //unija razlike 2 skupa pa vrednosti mapira u dict iz str
+    var razlika = di
+                .filter(x => !realDi.includes(x))
+                .concat(realDi.filter(x => !di.includes(x)))
+                .map(x => (JSON.parse(x)));
+    //dodaje novi key value par(id)
+    razlika.forEach((x) => {
+      x["id"] = guid();
+    });
+
+    return razlika;
+  }
+  //smesta sve u diffEdges
+  diffEdges = poredi(); 
+  console.log(diffEdges)
+  
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
@@ -217,7 +265,7 @@ const GraphCompare = () => {
 
   return (
     <Row>
-      <Col style={{ width: "50%" }}>
+      <Col style={{ width: "33.33%" }}>
         <Fragment>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div style={{ width: "100%" }}>
@@ -257,7 +305,7 @@ const GraphCompare = () => {
           </div>
         </Fragment>
       </Col>
-      <Col style={{ width: "50%" }}>
+      <Col style={{ width: "33.33%" }}>
         <Fragment>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div style={{ width: "100%" }}>
@@ -288,6 +336,39 @@ const GraphCompare = () => {
                     onEdgeUpdate={onEdgeUpdateReal}
                     onEdgeUpdateStart={onEdgeUpdateStartReal}
                     onEdgeUpdateEnd={onEdgeUpdateEndReal}
+                  >
+                    <Background color="#888" gap={32} />
+                  </ReactFlow>
+                </div>
+              </ReactFlowProvider>
+            </div>
+          </div>
+        </Fragment>
+      </Col>
+      <Col style={{ width: "33.33%" }}>
+        <Fragment>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <div style={{ width: "100%" }}>
+              <ReactFlowProvider>
+                <div className="reactflow-wrapper" ref={reactFlowWrapperDiff}>
+                  <ReactFlow
+                    nodes={diffNodes}
+                    edges={diffEdges}
+                    onInit={setReactFlowInstanceDiff}
+                    style={{
+                      width: "100%",
+                      height: "80vh",
+                      border: "1px solid #16001E",
+                    }}
+                    onConnect={onConnectReal}
+                    connectionLineStyle={{ stroke: "black", strokeWidth: 2 }}
+                    connectionLineType="bezier"
+                    defaultEdgeOptions={defaultEdgeOptions}
+                    snapToGrid={true}
+                    snapGrid={[16, 16]}
+                    deleteKeyCode={46}
+                    selectionKeyCode={17}
+                    edgeTypes={edgeTypes}
                   >
                     <Background color="#888" gap={32} />
                   </ReactFlow>
